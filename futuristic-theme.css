@@ -1,0 +1,478 @@
+/* Futuristic Theme Variables */
+:root {
+    /* Color Palette */
+    --primary-rgb: 0, 195, 255;
+    --accent-rgb: 255, 0, 128;
+    --success-rgb: 0, 255, 170;
+    --warning-rgb: 255, 180, 0;
+    --text-rgb: 255, 255, 255;
+    --bg-dark: #0a0b1e;
+    --bg-darker: #050714;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, rgba(var(--primary-rgb), 0.9), rgba(var(--accent-rgb), 0.9));
+    --gradient-dark: linear-gradient(135deg, rgba(10, 11, 30, 0.9), rgba(5, 7, 20, 0.9));
+    
+    /* Shadows */
+    --neon-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3),
+                   0 0 20px rgba(var(--primary-rgb), 0.2),
+                   0 0 30px rgba(var(--primary-rgb), 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    
+    /* Base Colors */
+    --neon-blue: #00f3ff;
+    --deep-blue: #001b2e;
+    --cyber-purple: #7b2cf3;
+    --cyber-pink: #ff2cf3;
+    --hologram-blue: rgba(0, 243, 255, 0.2);
+    
+    /* Updated Theme Colors */
+    --background: var(--bg-dark);
+    --foreground: rgb(var(--text-rgb));
+    --card: rgba(10, 11, 30, 0.7);
+    --card-foreground: rgb(var(--primary-rgb));
+    --primary: rgb(var(--primary-rgb));
+    --primary-foreground: var(--bg-dark);
+    --secondary: var(--cyber-purple);
+    --accent: var(--cyber-pink);
+    
+    /* UI Elements */
+    --glass-bg: rgba(10, 11, 30, 0.7);
+    --glass-border: rgba(var(--primary-rgb), 0.2);
+    --glass-shadow: var(--glass-shadow);
+    --neon-glow: 0 0 10px rgba(var(--primary-rgb), 0.3),
+                 0 0 20px rgba(var(--primary-rgb), 0.2),
+                 0 0 30px rgba(var(--primary-rgb), 0.1);
+    --hologram-glow: 0 0 15px var(--hologram-blue),
+                     0 0 30px rgba(0, 243, 255, 0.2);
+  }
+  
+  /* Base Styles */
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+  
+  /* Glassmorphism Cards */
+  .glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 1rem;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .glass-panel:hover {
+    box-shadow: var(--neon-glow);
+    transform: translateY(-2px);
+  }
+  
+  /* Neon Text Effects */
+  .neon-text {
+    color: var(--primary);
+    text-shadow: var(--neon-shadow);
+    letter-spacing: 2px;
+  }
+  
+  .neon-text:hover {
+    text-shadow: 0 0 15px rgba(var(--primary-rgb), 0.4),
+                 0 0 25px rgba(var(--primary-rgb), 0.3),
+                 0 0 35px rgba(var(--primary-rgb), 0.2);
+  }
+  
+  /* Holographic Elements */
+  .hologram {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hologram::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--hologram-blue),
+      transparent
+    );
+    animation: hologram-scan 3s linear infinite;
+  }
+  
+  @keyframes hologram-scan {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(50%); }
+  }
+  
+  /* Futuristic Buttons */
+  .btn {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 10px 25px;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    z-index: 1;
+  }
+  
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    transition: all 0.3s ease;
+    z-index: -1;
+  }
+  
+  .btn:hover::before {
+    left: 0;
+  }
+  
+  .btn:hover {
+    color: var(--primary-foreground);
+    box-shadow: var(--neon-glow);
+  }
+  
+  /* HUD-style UI Elements */
+  .hud-container {
+    position: relative;
+    padding: 20px;
+    border: 1px solid var(--primary);
+    border-radius: 5px;
+  }
+  
+  .hud-container::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 1px solid var(--primary);
+    border-radius: 7px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  .hud-header {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .hud-header::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    background: var(--primary);
+    transform: translateY(-50%) rotate(45deg);
+  }
+  
+  /* Progress Indicators */
+  .cyber-progress {
+    width: 100%;
+    height: 4px;
+    background: var(--glass-bg);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .cyber-progress::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--primary);
+    animation: progress-scan 2s ease-in-out infinite;
+  }
+  
+  @keyframes progress-scan {
+    0% { width: 0; opacity: 1; }
+    50% { width: 100%; opacity: 0.5; }
+    100% { width: 0; opacity: 1; }
+  }
+  
+  /* Circular Stats */
+  .stat-circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .stat-circle::before {
+    content: '';
+    position: absolute;
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    border: 1px dashed var(--primary);
+    animation: rotate 10s linear infinite;
+  }
+  
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Grid Layouts */
+  .cyber-grid {
+    display: grid;
+    gap: 20px;
+    position: relative;
+  }
+  
+  .cyber-grid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      linear-gradient(90deg, var(--glass-bg) 1px, transparent 1px),
+      linear-gradient(0deg, var(--glass-bg) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+  
+  /* Loading Animations */
+  .cyber-loading {
+    width: 40px;
+    height: 40px;
+    border: 2px solid transparent;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: cyber-spin 1s linear infinite;
+  }
+  
+  @keyframes cyber-spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Form Elements */
+  .cyber-input {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--primary);
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .cyber-input:focus {
+    border-color: var(--primary);
+    box-shadow: var(--neon-glow);
+    outline: none;
+  }
+  
+  /* Navigation */
+  .cyber-nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+  
+  .cyber-nav-link {
+    color: var(--primary);
+    text-decoration: none;
+    padding: 10px 20px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .cyber-nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .cyber-nav-link:hover::before {
+    transform: scaleX(1);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .cyber-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .glass-panel {
+      margin: 10px 0;
+    }
+  }
+  
+  /* Animation Utilities */
+  .pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  /* 3D Model Container */
+  .model-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: var(--glass-bg);
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  .model-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+  
+  /* Health Stats Display */
+  .health-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background: var(--glass-bg);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary);
+  }
+  
+  /* ECG Animation */
+  .ecg-line {
+    width: 100%;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ecg-path {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 200%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      var(--primary) 0%, 
+      var(--cyber-purple) 50%, 
+      var(--primary) 100%
+    );
+    animation: ecg-scan 2s linear infinite;
+  }
+  
+  @keyframes ecg-scan {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  /* DNA Animation */
+  .dna-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+  }
+  
+  .dna-strand {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    background: var(--primary);
+    transform-origin: top;
+    animation: dna-rotate 3s linear infinite;
+  }
+  
+  .dna-strand::before,
+  .dna-strand::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background: var(--cyber-purple);
+  }
+  
+  .dna-strand::before {
+    left: 0;
+    transform-origin: left;
+    animation: dna-connect 3s linear infinite;
+  }
+  
+  .dna-strand::after {
+    right: 0;
+    transform-origin: right;
+    animation: dna-connect 3s linear infinite reverse;
+  }
+  
+  @keyframes dna-rotate {
+    0% { transform: translateX(-50%) rotate(0deg); }
+    100% { transform: translateX(-50%) rotate(360deg); }
+  }
+  
+  @keyframes dna-connect {
+    0%, 100% { transform: rotate(60deg); }
+    50% { transform: rotate(-60deg); }
+  }
+  

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Programs - MediCare</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="futuristic-theme.css">
+    <link rel="stylesheet" href="styles/navbar-footer.css">
+    <!-- Three.js and GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <!-- Spline for DNA Animation -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.79/build/spline-viewer.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Keep only page-specific styles */
+        .training-section {
+            padding-top: 80px;
+        }
+
+        .training-card {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .training-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(var(--primary-rgb), 0.4);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .training-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .training-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .training-subtitle {
+            color: rgba(var(--text-rgb), 0.7);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .training-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .training-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .training-card-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .training-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .training-card-duration,
+        .training-card-level {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+        }
+
+        .training-card-price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: rgb(var(--primary-rgb));
+        }
+
+        .training-card-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-enroll {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: rgb(var(--primary-rgb));
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-enroll:hover {
+            background: rgb(var(--primary-dark-rgb));
+            transform: translateY(-2px);
+        }
+
+        .btn-details {
+            padding: 0.75rem;
+            border: 1px solid rgba(var(--primary-rgb), 0.3);
+            border-radius: 0.5rem;
+            background: transparent;
+            color: rgb(var(--primary-rgb));
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-details:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            border-color: rgb(var(--primary-rgb));
+        }
+
+        /* Background orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb-1 {
+            background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.3), transparent 70%);
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.3), transparent 70%);
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            left: -50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Content -->
+    <section class="py-16 md:py-24">
+        <div class="max-w-6xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-12 fade-in">
+                <br>
+                <br>
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-white">Healthcare Training Programs</h1>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto font-family:'times new roman'">
+                    Enhance your skills with our comprehensive training programs for healthcare professionals and caregivers
+                </p>
+            </div>
+            
+            <!-- Featured Programs -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="bg-white rounded-xl overflow-hidden shadow-glow fade-in" style="background-color: #061230a5;">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="./assets/Training01.png" alt="Medical Professional Training" class="w-full h-full object-cover">
+                        <div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 rounded-bl-lg">Featured</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-white">Medical Professional Training</h3>
+                        <p class="text-gray-400 text-sm mb-4 font-family:'stats-section'">
+                            Advanced courses for doctors, nurses, and healthcare providers to stay updated with the latest medical techniques and technologies.
+                        </p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm text-gray-500">
+                                <i data-lucide="clock" class="icon-sm inline mr-1"></i> 120 hours
+                            </span>
+                            <span class="text-sm text-gray-500">
+                                <i data-lucide="users" class="icon-sm inline mr-1"></i> 1,245 enrolled
+                            </span>
+                        </div>
+                        <button class="btn btn-primary w-full">Learn More</button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl overflow-hidden shadow-glow fade-in" style="background-color: #061230a5;">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="./assets/Training02.png" alt="Emergency Care Training" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-white">Emergency Care Training</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Comprehensive training on emergency medical procedures, first aid, CPR, and handling medical emergencies.
+                        </p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm text-gray-500">
+                                <i data-lucide="clock" class="icon-sm inline mr-1"></i> 60 hours
+                            </span>
+                            <span class="text-sm text-gray-500">
+                                <i data-lucide="users" class="icon-sm inline mr-1"></i> 3,782 enrolled
+                            </span>
+                        </div>
+                        <button class="btn btn-primary w-full">Learn More</button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl overflow-hidden shadow-glow fade-in" style="background-color: #061230a5;">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="./assets/Training03.png" alt="Caregiver Training" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-white">Family Caregiver Training</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Essential courses for family members and non-professional caregivers on providing quality care.
+                        </p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm text-gray-500">
+                                <i data-lucide="clock" class="icon-sm inline mr-1"></i> 40 hours
+                            </span>
+                            <span class="text-sm text-gray-500">
+                                <i data-lucide="users" class="icon-sm inline mr-1"></i> 5,120 enrolled
+                            </span>
+                        </div>
+                        <button class="btn btn-primary w-full">Learn More</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Training Approach -->
+            <div class="bg-white p-8 rounded-xl mb-16 fade-in shadow-glow" style="background-color: #061230a5;">
+                <h2 class="text-2xl font-bold mb-6 text-center text-white">Our Training Approach</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="book-open" class="icon-md text-primary"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2 text-white">Expert-Led Curriculum</h3>
+                        <p class="text-sm text-gray-400">
+                            All courses are developed and taught by experienced healthcare professionals.
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="monitor" class="icon-md text-primary"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2 text-white">Blended Learning</h3>
+                        <p class="text-sm text-gray-400">
+                            Combination of online modules and hands-on practical sessions.
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="award" class="icon-md text-primary"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2 text-white">Industry Certification</h3>
+                        <p class="text-sm text-gray-400">
+                            Earn recognized certificates to enhance your professional credentials.
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="refresh-cw" class="icon-md text-primary"></i>
+                        </div>
+                        <h3 class="font-semibold mb-2 text-white">Continuous Support</h3>
+                        <p class="text-sm text-gray-400">
+                            Ongoing mentorship and resources even after course completion.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Course Categories -->
+            <div class="mb-16" style="background-color: #061230a5;">
+                <br>
+                <h2 class="text-2xl font-bold mb-8 text-center text-white">Training Categories</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-black p-6 rounded-xl shadow-glow flex fade-in">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <i data-lucide="clipboard-list" class="text-primary" style="width: 28px; height: 28px;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-white">Clinical Skills</h3>
+                            <p class="text-gray-400 text-sm mb-3">
+                                Patient assessment, vital signs monitoring, wound care, medication administration, and more.
+                            </p>
+                            <a href="#" class="text-primary font-medium text-sm flex items-center hover:text-primary/80">
+                                Browse 24 courses <i data-lucide="arrow-right" class="ml-1" style="width: 14px; height: 14px;"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black p-6 rounded-xl shadow-glow flex fade-in">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <i data-lucide="heart-pulse" class="text-primary" style="width: 28px; height: 28px;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-white">Emergency Response</h3>
+                            <p class="text-gray-400 text-sm mb-3">
+                                CPR, first aid, trauma care, disaster response, and emergency medical procedures.
+                            </p>
+                            <a href="#" class="text-primary font-medium text-sm flex items-center hover:text-primary/80">
+                                Browse 18 courses <i data-lucide="arrow-right" class="ml-1" style="width: 14px; height: 14px;"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black p-6 rounded-xl shadow-glow flex fade-in">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <i data-lucide="brain" class="text-primary" style="width: 28px; height: 28px;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-white">Mental Health Care</h3>
+                            <p class="text-gray-400 text-sm mb-3">
+                                Crisis intervention, de-escalation techniques, psychological first aid, and supportive counseling.
+                            </p>
+                            <a href="#" class="text-primary font-medium text-sm flex items-center hover:text-primary/80">
+                                Browse 15 courses <i data-lucide="arrow-right" class="ml-1" style="width: 14px; height: 14px;"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black p-6 rounded-xl shadow-glow flex fade-in">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <i data-lucide="stethoscope" class="text-primary" style="width: 28px; height: 28px;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-white">Specialized Care</h3>
+                            <p class="text-gray-400 text-sm mb-3">
+                                Pediatric care, geriatric care, palliative care, and specialized medical conditions.
+                            </p>
+                            <a href="#" class="text-primary font-medium text-sm flex items-center hover:text-primary/80">
+                                Browse 32 courses <i data-lucide="arrow-right" class="ml-1" style="width: 14px; height: 14px;"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA -->
+            <div class="bg-primary/10 text-white p-8 md:p-12 rounded-xl text-center shadow-glow">
+                <h2 class="text-2xl font-bold mb-4">Start Your Healthcare Training Journey</h2>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Join thousands of healthcare professionals and caregivers who have enhanced their skills through our comprehensive training programs.
+                </p>
+                <button class="btn btn-primary">Browse All Courses</button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Hero Section -->
+    <section class="training-hero section-padding">
+        <div class="container">
+            <div class="glass-panel">
+                <h1 class="neon-text float">Advanced Medical Training Programs</h1>
+                <p class="hero-subtitle">Enhance your healthcare knowledge with our cutting-edge courses and resources</p>
+            </div>
+        </div>
+        <br><br>
+    </section>
+
+    <!-- Course Categories -->
+    <section class="categories-section section-padding">
+        <div class="container">
+            <div class="cyber-grid">
+                <div class="glass-panel hologram">
+                    <div class="category-icon">
+                        <i data-lucide="stethoscope"></i>
+                    </div>
+                    <h3 class="neon-text">Clinical Practice</h3>
+                    <div class="cyber-progress"></div>
+                    <ul class="course-list">
+                        <li>Advanced Patient Care</li>
+                        <li>Emergency Response</li>
+                        <li>Medical Procedures</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel hologram">
+                    <div class="category-icon">
+                        <i data-lucide="brain"></i>
+                    </div>
+                    <h3 class="neon-text">AI in Healthcare</h3>
+                    <div class="cyber-progress"></div>
+                    <ul class="course-list">
+                        <li>AI Diagnostics</li>
+                        <li>Machine Learning Basics</li>
+                        <li>Data Analysis</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel hologram">
+                    <div class="category-icon">
+                        <i data-lucide="heart-pulse"></i>
+                    </div>
+                    <h3 class="neon-text">Specialized Care</h3>
+                    <div class="cyber-progress"></div>
+                    <ul class="course-list">
+                        <li>Cardiology</li>
+                        <li>Neurology</li>
+                        <li>Pediatrics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <br><br>
+    </section>
+
+    <!-- Featured Courses -->
+    <section class="courses-section section-padding">
+
+        <div class="container">
+            <h2 class="section-title neon-text text-center">Featured Courses</h2>
+            <div class="cyber-grid">
+                <br>
+                <div class="glass-panel course-card">
+                    <div class="course-image hologram">
+                        <div class="progress-ring">
+                            <svg>
+                                <circle cx="40" cy="40" r="35"></circle>
+                                <circle cx="40" cy="40" r="35" class="progress"></circle>
+                            </svg>
+                            <span class="progress-text">New</span>
+                        </div>
+                    </div>
+                    <h3 class="neon-text">Advanced AI Diagnostics</h3>
+                    <p>Learn how to leverage AI for accurate medical diagnoses</p>
+                    <div class="course-meta">
+                        <span><i data-lucide="clock"></i> 8 weeks</span>
+                        <span><i data-lucide="users"></i> 250 enrolled</span>
+                    </div>
+                    <a href="#" class="btn btn-primary">Enroll Now</a>
+                </div>
+
+                <div class="glass-panel course-card">
+                    <div class="course-image hologram">
+                        <div class="progress-ring">
+                            <svg>
+                                <circle cx="40" cy="40" r="35"></circle>
+                                <circle cx="40" cy="40" r="35" class="progress"></circle>
+                            </svg>
+                            <span class="progress-text">Popular</span>
+                        </div>
+                    </div>
+                    <h3 class="neon-text">Emergency Care Protocols</h3>
+                    <p>Master modern emergency response techniques</p>
+                    <div class="course-meta">
+                        <span><i data-lucide="clock"></i> 6 weeks</span>
+                        <span><i data-lucide="users"></i> 420 enrolled</span>
+                    </div>
+                    <a href="#" class="btn btn-primary">Enroll Now</a>
+                </div>
+
+                <div class="glass-panel course-card">
+                    <div class="course-image hologram">
+                        <div class="progress-ring">
+                            <svg>
+                                <circle cx="40" cy="40" r="35"></circle>
+                                <circle cx="40" cy="40" r="35" class="progress"></circle>
+                            </svg>
+                            <span class="progress-text">Advanced</span>
+                        </div>
+                    </div>
+                    <h3 class="neon-text">Digital Health Records</h3>
+                    <p>Learn modern health record management systems</p>
+                    <div class="course-meta">
+                        <span><i data-lucide="clock"></i> 4 weeks</span>
+                        <span><i data-lucide="users"></i> 180 enrolled</span>
+                    </div>
+                    <a href="#" class="btn btn-primary">Enroll Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Stats -->
+    <section class="stats-section section-padding">
+        <div class="container">
+            <div class="cyber-grid">
+                <div class="glass-panel stat-card">
+                    <div class="stat-circle pulse">
+                        <div class="stat-value">1000+</div>
+                    </div>
+                    <h3 class="neon-text">Active Students</h3>
+                    <div class="cyber-progress"></div>
+                </div>
+
+                <div class="glass-panel stat-card">
+                    <div class="stat-circle pulse">
+                        <div class="stat-value">50+</div>
+                    </div>
+                    <h3 class="neon-text">Expert Instructors</h3>
+                    <div class="cyber-progress"></div>
+                </div>
+
+                <div class="glass-panel stat-card">
+                    <div class="stat-circle pulse">
+                        <div class="stat-value">30+</div>
+                    </div>
+                    <h3 class="neon-text">Courses Available</h3>
+                    <div class="cyber-progress"></div>
+                </div>
+
+                <div class="glass-panel stat-card">
+                    <div class="stat-circle pulse">
+                        <div class="stat-value">95%</div>
+                    </div>
+                    <h3 class="neon-text">Completion Rate</h3>
+                    <div class="cyber-progress"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Resources -->
+    <section class="resources-section section-padding">
+        <div class="container">
+            <br>
+            <h2 class="section-title neon-text text-center">Learning Resources</h2>
+            <br>
+            <div class="cyber-grid">
+                <div class="glass-panel resource-card">
+                    <div class="resource-icon">
+                        <i data-lucide="book-open"></i>
+                    </div>
+                    <h3 class="neon-text">E-Library</h3>
+                    <p>Access our comprehensive collection of medical literature and research papers</p>
+                    <a href="#" class="btn btn-primary">Browse Library</a>
+                </div>
+
+                <div class="glass-panel resource-card">
+                    <div class="resource-icon">
+                        <i data-lucide="video"></i>
+                    </div>
+                    <h3 class="neon-text">Video Tutorials</h3>
+                    <p>Watch detailed video demonstrations of medical procedures and techniques</p>
+                    <a href="#" class="btn btn-primary">Watch Videos</a>
+                </div>
+
+                <div class="glass-panel resource-card">
+                    <div class="resource-icon">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h3 class="neon-text">Community Forum</h3>
+                    <p>Connect with fellow healthcare professionals and share knowledge</p>
+                    <a href="#" class="btn btn-primary">Join Discussion</a>
+                </div>
+            </div>
+        </div>
+        <br><br>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <button id="chat-toggle" class="chat-toggle">
+            <i data-lucide="message-circle"></i>
+        </button>
+        
+        <div id="chat-window" class="chat-window hidden">
+            <div class="chat-header">
+                <h3>MediCare Chat</h3>
+                <button id="close-chat" class="close-chat">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="chat-messages"></div>
+            
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Type your message..." disabled>
+                <button class="send-button" disabled>
+                    <i data-lucide="send"></i>
+                </button>
+            </div>
+            
+            <div class="login-prompt">
+                Please <a href="login.html">log in</a> to chat with our support team
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load navbar and footer
+            fetch('components/navbar-footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    // Insert navbar
+                    const navbarPlaceholder = document.getElementById('navbar-placeholder');
+                    const navbarContent = data.split('<!-- Footer -->')[0];
+                    navbarPlaceholder.innerHTML = navbarContent;
+
+                    // Insert footer
+                    const footerPlaceholder = document.getElementById('footer-placeholder');
+                    const footerContent = data.split('<!-- Footer -->')[1];
+                    footerPlaceholder.innerHTML = footerContent;
+
+                    // Initialize Lucide icons
+                    lucide.createIcons();
+
+                    // Check login status
+                    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                    if (!isLoggedIn) {
+                        window.location.replace('login.html');
+                        return;
+                    }
+
+                    // Update user information in dropdown
+                    const userName = localStorage.getItem('userName') || 'User';
+                    const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+                    
+                    document.getElementById('userNameDisplay').textContent = userName;
+                    document.getElementById('userFullName').textContent = userName;
+                    document.getElementById('userEmail').textContent = userEmail;
+
+                    // Handle dropdown toggle
+                    const dropdownToggle = document.querySelector('.dropdown-toggle');
+                    const dropdownMenu = document.querySelector('.dropdown-menu');
+                    
+                    // Toggle dropdown on click
+                    dropdownToggle.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        dropdownToggle.classList.toggle('active');
+                        dropdownMenu.classList.toggle('show');
+                    });
+
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', (e) => {
+                        if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                            dropdownToggle.classList.remove('active');
+                        }
+                    });
+
+                    // Mobile menu toggle
+                    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+                    const navLinks = document.querySelector('.nav-links');
+                    
+                    mobileMenuToggle.addEventListener('click', () => {
+                        navLinks.classList.toggle('active');
+                    });
+
+                    // Prevent dropdown from closing when clicking inside
+                    dropdownMenu.addEventListener('click', (e) => {
+                        if (!e.target.closest('#logoutBtn')) {
+                            e.stopPropagation();
+                        }
+                    });
+
+                    // Handle logout
+                    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        // Show loading state
+                        const loader = document.createElement('div');
+                        loader.className = 'page-loader';
+                        loader.innerHTML = '<span class="loader"></span>';
+                        document.body.appendChild(loader);
+                        
+                        // Clear user data
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('userEmail');
+                        localStorage.removeItem('userName');
+                        
+                        // Redirect with slight delay for smooth transition
+                        setTimeout(() => {
+                            window.location.replace('index.html');
+                        }, 500);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>

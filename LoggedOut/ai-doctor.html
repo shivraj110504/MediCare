@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Doctor - MediCare</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../futuristic-theme.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .ai-chat-section {
+            min-height: 100vh;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            position: relative;
+            z-index: 1; /* Lower z-index to stay below dropdown */
+        }
+
+        .symptoms-panel {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            height: calc(100vh - 120px);
+            position: sticky;
+            top: 80px;
+        }
+
+        .chat-panel {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            margin: -1rem;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: rgba(var(--primary-rgb), 0.1);
+            margin-left: auto;
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+        }
+
+        .message.ai {
+            background: rgba(var(--accent-rgb), 0.1);
+            margin-right: auto;
+            border: 1px solid rgba(var(--accent-rgb), 0.2);
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(var(--primary-rgb), 0.2);
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(var(--primary-rgb), 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: rgba(var(--text-rgb), 0.9);
+            font-size: 1rem;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: rgba(var(--primary-rgb), 0.8);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .symptom-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-top: 1rem;
+        }
+
+        .symptom-item {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .symptom-item:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            border-color: rgba(var(--primary-rgb), 0.4);
+        }
+
+        .symptom-item.selected {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.6);
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(var(--success-rgb), 0.1);
+            border: 1px solid rgba(var(--success-rgb), 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgb(var(--success-rgb));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.3), transparent 70%);
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.2), transparent 70%);
+            width: 300px;
+            height: 300px;
+            bottom: 10%;
+            left: -50px;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+
+            .symptoms-panel {
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 2rem;
+        }
+
+        .user-profile {
+            margin-left: auto;
+            position: relative;
+            z-index: 9999; /* Increased z-index to appear above chat */
+        }
+
+        .user-dropdown {
+            position: relative;
+            z-index: 9999; /* Increased z-index to appear above chat */
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .user-profile {
+            position: relative;
+            margin-left: auto;
+            z-index: 9999;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: rgb(var(--primary-rgb));
+        }
+
+        .dropdown-header {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        .text-danger {
+            color: #ff4444 !important;
+        }
+
+        .text-danger:hover {
+            background: rgba(255, 68, 68, 0.15) !important;
+            color: #ff6666 !important;
+        }
+
+        .icon-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-profile {
+                margin-left: 0;
+            }
+        }
+
+        /* Fixed z-index stacking */
+        .chat-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .symptoms-panel {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-panel {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navbar and dropdown should be above everything */
+        .nav-container {
+            position: relative;
+            z-index: 10000;
+        }
+
+        .user-profile {
+            position: relative;
+            z-index: 10000;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            display: none;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        /* Ensure dropdown items are visible */
+        .dropdown-item {
+            position: relative;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: rgb(var(--primary-rgb));
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="cyber-theme">
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- Header -->
+    <header id="header" class="cyber-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-text neon-text">MediCare</div>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="ai-doctor.html" class="nav-link active">AI Doctor</a>
+                <a href="appointment.html" class="nav-link">Appointments</a>
+                <a href="hospital-beds.html" class="nav-link">Hospital Beds</a>
+                <a href="training.html" class="nav-link">Training</a>
+                <a href="medicine.html" class="nav-link">Medicine</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+
+            <!-- User Profile on Right -->
+            <!-- <div class="user-profile">
+                <div class="user-dropdown">
+                    <button class="dropdown-toggle">
+                        <i data-lucide="user-circle" class="icon-sm"></i>
+                        <span id="userNameDisplay">Guest</span>
+                        <i data-lucide="chevron-down" class="icon-sm"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <i data-lucide="user" class="icon-sm"></i>
+                                <div>
+                                    <div id="userFullName" class="user-name">User Name</div>
+                                    <div id="userEmail" class="user-email">user@example.com</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="user" class="icon-sm"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="settings" class="icon-sm"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn" class="dropdown-item text-danger">
+                            <i data-lucide="log-out" class="icon-sm"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="nav-right">
+                <div class="auth-buttons" data-auth-hide="false">
+                    <a href="../login.html" class="btn btn-outline btn-glow">Login</a>
+                    <a href="../signup.html" class="btn btn-primary btn-glow">Sign Up</a>
+                </div>
+                
+                <!-- <div class="user-profile" data-auth-show="false">
+                    <div class="user-info">
+                        <i data-lucide="user"></i>
+                        <span class="user-name">User</span>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" id="logoutBtn" class="dropdown-item">
+                            <i data-lucide="log-out"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </header>
+
+    <!-- AI Chat Section -->
+    <section class="ai-chat-section">
+        <div class="container">
+            <div class="chat-container">
+                
+                <!-- Symptoms Panel -->
+                <div class="symptoms-panel">
+                    <h2 class="neon-text">Common Symptoms</h2>
+                    <p class="subtitle">Select your symptoms for a more accurate diagnosis</p>
+                    
+                    <div class="ai-status">
+                        <div class="status-dot"></div>
+                        <span>AI Doctor is online</span>
+                    </div>
+                    
+                    <ul class="symptom-list">
+                        <li class="symptom-item">Fever</li>
+                        <li class="symptom-item">Headache</li>
+                        <li class="symptom-item">Cough</li>
+                        <li class="symptom-item">Fatigue</li>
+                        <li class="symptom-item">Nausea</li>
+                        <li class="symptom-item">Body Pain</li>
+                        <li class="symptom-item">Sore Throat</li>
+                        <li class="symptom-item">Shortness of Breath</li>
+                        <li class="symptom-item">Dizziness</li>
+                        <li class="symptom-item">Loss of Appetite</li>
+                    </ul>
+                </div>
+                
+                <!-- Chat Panel -->
+                <div class="chat-panel">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai">
+                            Hello! I'm your AI Doctor assistant. How can I help you today?
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <input type="text" id="userInput" placeholder="Describe your symptoms..." />
+                        <button class="btn btn-primary btn-glow" onclick="sendMessage()">
+                            <i data-lucide="send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // Check login status
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                window.location.replace('login.html');
+                return;
+            }
+
+            // Update user information in dropdown
+            const userName = localStorage.getItem('userName') || 'User';
+            const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+            
+            document.getElementById('userNameDisplay').textContent = userName;
+            document.getElementById('userFullName').textContent = userName;
+            document.getElementById('userEmail').textContent = userEmail;
+
+            // Handle dropdown toggle
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            dropdownToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('active');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownToggle.classList.remove('active');
+                }
+            });
+
+            // Handle logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                window.location.replace('index.html');
+            });
+
+            // Enter key to send message
+            document.getElementById('userInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            function sendMessage() {
+                const input = document.getElementById('userInput');
+                const message = input.value.trim();
+                
+                if (!message) return;
+                
+                const chatMessages = document.getElementById('chatMessages');
+                
+                // Add user message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'message user';
+                userMsg.textContent = message;
+                chatMessages.appendChild(userMsg);
+                
+                // Clear input
+                input.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Your existing AI response logic here
+                // This will be handled by your backend
+            }
+        });
+    </script>
+</body>
+</html>

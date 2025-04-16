@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Delivery - MediCare</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="../toast-custom.css">
+    <link rel="stylesheet" href="../futuristic-theme.css">
+    <!-- Three.js and GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <!-- Spline for DNA Animation -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.79/build/spline-viewer.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Navbar Styles */
+        .header {
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.75rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 2rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: rgba(var(--primary-rgb), 0.2);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .user-name {
+            color: var(--primary-color);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2);
+            z-index: 1000;
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            color: rgb(var(--primary-rgb));
+        }
+
+        .menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Cart Styles */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(var(--primary-rgb), 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(var(--primary-rgb), 0.1);
+        }
+
+        .cart-item-info {
+            flex-grow: 1;
+        }
+
+        .cart-item-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .cart-item-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-price {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+        }
+
+        .quantity-control button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-control button:hover {
+            background: rgba(var(--primary-rgb), 0.2);
+        }
+
+        .quantity-control span {
+            color: #fff;
+            min-width: 1.5rem;
+            text-align: center;
+        }
+
+        .cart-item-total {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-total p {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+            }
+
+            .menu-button {
+                display: block;
+            }
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+            background: rgba(var(--primary-rgb), 0.05);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.375rem;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(var(--primary-rgb), 0.5);
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Medicine Card Styles */
+        .glass-panel {
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(var(--primary-rgb), 0.3);
+            box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2);
+            transform: translateY(-2px);
+        }
+
+        .medicine-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .medicine-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                rgba(var(--primary-rgb), 0.05) 0%,
+                rgba(var(--primary-rgb), 0.02) 100%
+            );
+            z-index: 0;
+        }
+
+        .medicine-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .stock-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .stock-badge.in-stock {
+            background: rgba(52, 211, 153, 0.1);
+            color: #34D399;
+        }
+
+        .stock-badge.low-stock {
+            background: rgba(251, 191, 36, 0.1);
+            color: #FBB224;
+        }
+
+        .prescription-upload {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.05);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.375rem;
+            color: #fff;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: rgba(var(--primary-rgb), 0.9);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(var(--primary-rgb), 0.5);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .icon-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .icon-md {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        /* User Dropdown Styles */
+        .user-dropdown {
+            position: relative;
+            margin-left: 1rem;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle:hover {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            color: rgb(var(--primary-rgb));
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        .text-danger {
+            color: #ff4444;
+        }
+
+        .text-danger:hover {
+            background: rgba(255, 68, 68, 0.1);
+            color: #ff6666;
+        }
+
+        .dropdown-header {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+    <style>
+        :root {
+            --primary-rgb: 59, 130, 246;
+            --primary-color: rgb(var(--primary-rgb));
+            --primary-dark: rgb(29, 78, 216);
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-primary-dark {
+            color: var(--primary-dark);
+        }
+
+        /* Toast styles */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: rgba(var(--primary-rgb), 0.95);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .toast.error {
+            background: rgba(220, 38, 38, 0.95);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* Cart styles */
+        .cart-item {
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="cyber-theme">
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Header -->
+    <header class="cyber-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-text neon-text">MediCare</div>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="../index.html" class="nav-link ">Home</a>
+                <a href="ai-doctor.html" class="nav-link">AI Doctor</a>
+                <a href="appointment.html" class="nav-link">Appointments</a>
+                <a href="hospital-beds.html" class="nav-link">Hospital Beds</a>
+                <a href="training.html" class="nav-link">Training</a>
+                <a href="medicine.html" class="nav-link active">Medicine</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+
+            <!-- User Profile on Right -->
+            <!-- <div class="user-profile">
+                <div class="user-dropdown">
+                    <button class="dropdown-toggle">
+                        <i data-lucide="user-circle" class="icon-sm"></i>
+                        <span id="userNameDisplay">Guest</span>
+                        <i data-lucide="chevron-down" class="icon-sm"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <i data-lucide="user" class="icon-sm"></i>
+                                <div>
+                                    <div id="userFullName" class="user-name">User Name</div>
+                                    <div id="userEmail" class="user-email">user@example.com</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="user" class="icon-sm"></i>
+                            Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="settings" class="icon-sm"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn" class="dropdown-item text-danger">
+                            <i data-lucide="log-out" class="icon-sm"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="nav-right">
+                <div class="auth-buttons" data-auth-hide="false">
+                    <a href="../login.html" class="btn btn-outline btn-glow">Login</a>
+                    <a href="../signup.html" class="btn btn-primary btn-glow">Sign Up</a>
+                </div>
+                
+                <!-- <div class="user-profile" data-auth-show="false">
+                    <div class="user-info">
+                        <i data-lucide="user"></i>
+                        <span class="user-name">User</span>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" id="logoutBtn" class="dropdown-item">
+                            <i data-lucide="log-out"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <section class="py-16 md:py-24 bg-dark">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-12 fade-in">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-white neon-text">Medicine Delivery</h1>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Order essential medications online and get them delivered to your doorstep
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-2">
+                    <div class="glass-panel p-4 mb-6 fade-in">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" style="width: 20px; height: 20px;"></i>
+                            <input
+                                type="text"
+                                id="searchInput"
+                                placeholder="Search medicines by name or generic compound..."
+                                class="pl-10 w-full px-4 py-2 bg-dark border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-primary text-white"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div id="medicinesList" class="space-y-4 fade-in">
+                        <!-- Medicine Items -->
+                        <div class="medicine-item bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-shadow" style="background-color: #061230a5;">
+                            <div class="flex items-start justify-between" >
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-1" style="color: aliceblue;">Paracetamol 500mg</h3>
+                                    <p class="text-gray-600 text-sm mb-2">Generic: Acetaminophen</p>
+                                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                                        <span class="mr-3"><i data-lucide="package" class="icon-sm mr-1"></i> 10 tablets</span>
+                                        <span><i data-lucide="tag" class="icon-sm mr-1"></i> ₹35</span>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addToCart('paracetamol', 'Paracetamol 500mg', 35)">
+                                        <i data-lucide="plus" class="icon-sm mr-1"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <img src="../assets/paracitemol.png" alt="Paracetamol" class="w-20 h-20 object-cover rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="medicine-item bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-shadow" style="background-color: #061230a5;">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-1" style="color: aliceblue;">Amoxicillin 500mg</h3>
+                                    <p class="text-gray-600 text-sm mb-2">Generic: Amoxicillin Trihydrate</p>
+                                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                                        <span class="mr-3"><i data-lucide="package" class="icon-sm mr-1"></i> 15 capsules</span>
+                                        <span><i data-lucide="tag" class="icon-sm mr-1"></i> ₹120</span>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addToCart('amoxicillin', 'Amoxicillin 500mg', 120)">
+                                        <i data-lucide="plus" class="icon-sm mr-1"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <img src="../assets/AMOXICILLIN.png" alt="Amoxicillin" class="w-20 h-20 object-cover rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="medicine-item bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-shadow" style="background-color: #061230a5;">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-1" style="color: aliceblue;">Omeprazole 20mg</h3>
+                                    <p class="text-gray-600 text-sm mb-2">Generic: Omeprazole</p>
+                                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                                        <span class="mr-3"><i data-lucide="package" class="icon-sm mr-1"></i> 30 capsules</span>
+                                        <span><i data-lucide="tag" class="icon-sm mr-1"></i> ₹85</span>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addToCart('omeprazole', 'Omeprazole 20mg', 85)">
+                                        <i data-lucide="plus" class="icon-sm mr-1"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <img src="../assets/Omeprazole_20mg.png" alt="Omeprazole" class="w-20 h-20 object-cover rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="medicine-item bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-shadow" style="background-color: #061230a5;">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-1" style="color: aliceblue;">Cetirizine 10mg</h3>
+                                    <p class="text-gray-600 text-sm mb-2">Generic: Cetirizine Hydrochloride</p>
+                                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                                        <span class="mr-3"><i data-lucide="package" class="icon-sm mr-1"></i> 10 tablets</span>
+                                        <span><i data-lucide="tag" class="icon-sm mr-1"></i> ₹45</span>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addToCart('cetirizine', 'Cetirizine 10mg', 45)">
+                                        <i data-lucide="plus" class="icon-sm mr-1"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <img src="../assets/Cetirizine_10mg.png.crdownload" alt="Cetirizine" class="w-20 h-20 object-cover rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="medicine-item bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-shadow"style="background-color: #061230a5;">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-1" style="color: aliceblue;">Metformin 500mg</h3>
+                                    <p class="text-gray-600 text-sm mb-2">Generic: Metformin Hydrochloride</p>
+                                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                                        <span class="mr-3"><i data-lucide="package" class="icon-sm mr-1"></i> 60 tablets</span>
+                                        <span><i data-lucide="tag" class="icon-sm mr-1"></i> ₹95</span>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="addToCart('metformin', 'Metformin 500mg', 95)">
+                                        <i data-lucide="plus" class="icon-sm mr-1"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <img src="../assets/Metformin_Hcl_500mg.png" alt="Metformin" class="w-20 h-20 object-cover rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="glass-panel p-6 sticky top-24 fade-in">
+                        <h2 class="text-xl font-semibold mb-4 text-white">Your Cart</h2>
+                        
+                        <div id="emptyCart" class="text-center py-8">
+                            <div class="w-20 h-20 mx-auto mb-4 text-gray-600">
+                                <i data-lucide="shopping-cart" style="width: 80px; height: 80px;"></i>
+                            </div>
+                            <p class="text-gray-400">Your cart is empty</p>
+                        </div>
+                        
+                        <div id="cartContent" class="hidden">
+                            <div id="cartItems" class="space-y-4 mb-6">
+                                <!-- Cart items will be populated by JavaScript -->
+                            </div>
+                            
+                            <div class="border-t border-gray-700 pt-4 space-y-2">
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Subtotal</span>
+                                    <span id="subtotalAmount">₹0</span>
+                                </div>
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Delivery Fee</span>
+                                    <span>₹40</span>
+                                </div>
+                                <div class="flex justify-between font-semibold pt-2 border-t border-gray-700 text-white">
+                                    <span>Total</span>
+                                    <span id="totalAmount" class="text-primary">₹40</span>
+                                </div>
+                            </div>
+                            
+                            <form id="orderForm">
+                                <div class="mt-6 space-y-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Full Name</label>
+                                        <div class="input-with-icon">
+                                            <i data-lucide="user"></i>
+                                            <input
+                                                type="text"
+                                                id="name"
+                                                name="name"
+                                                required
+                                                placeholder="Enter your full name"
+                                                class="form-input"
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <div class="input-with-icon">
+                                            <i data-lucide="mail"></i>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                required
+                                                placeholder="Enter your email"
+                                                class="form-input"
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Phone Number</label>
+                                        <div class="input-with-icon">
+                                            <i data-lucide="phone"></i>
+                                            <input
+                                                type="tel"
+                                                id="phone"
+                                                name="phone"
+                                                required
+                                                placeholder="Enter your phone number"
+                                                class="form-input"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Delivery Address</label>
+                                        <div class="input-with-icon">
+                                            <i data-lucide="map-pin"></i>
+                                            <textarea
+                                                id="address"
+                                                name="address"
+                                                required
+                                                placeholder="Enter your complete delivery address"
+                                                class="form-input min-h-[100px] !pl-10 resize-none"
+                                                rows="3"
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Upload Prescription (if required)</label>
+                                        <div class="prescription-upload">
+                                            <span id="fileNameDisplay">No file chosen</span>
+                                            <button type="button" class="btn btn-outline" id="uploadBtn">
+                                                <i data-lucide="upload" class="icon-sm mr-1"></i>
+                                                Choose File
+                                            </button>
+                                            <input type="file" id="prescriptionUpload" class="hidden" accept="image/*,.pdf" />
+                                        </div>
+                                    </div>
+                                    
+                                    <a href="../login.html" class="btn btn-primary w-full" id="placeOrderBtn">
+                                        <i data-lucide="check" class="icon-sm mr-2"></i>
+                                        Place Order
+                                    </a>
+                                    
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" style="background-color: #0a1020;">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 class="footer-logo neon-text"  style="color: #00a8ff;">MediCare</h3>
+                    <p>Providing quality healthcare services and innovative solutions to improve your wellbeing.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i data-lucide="facebook"></i></a>
+                        <a href="#" class="social-link"><i data-lucide="twitter"></i></a>
+                        <a href="#" class="social-link"><i data-lucide="instagram"></i></a>
+                        <a href="#" class="social-link"><i data-lucide="linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="ai-doctor.html">AI Doctor</a></li>
+                        <li><a href="training.html">Training</a></li>
+                        <li><a href="medicine-delivery.html">Medicine Delivery</a></li>
+                        <li><a href="hospital-beds.html">Hospital Beds</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Telemedicine</a></li>
+                        <li><a href="#">Health Checkups</a></li>
+                        <li><a href="#">Medical Tourism</a></li>
+                        <li><a href="#">Home Healthcare</a></li>
+                        <li><a href="#">Emergency Services</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-list">
+                        <li>
+                            <i data-lucide="map-pin"></i>
+                            <span>123 Healthcare Avenue, Medical District, City, Country</span>
+                        </li>
+                        <li>
+                            <i data-lucide="phone"></i>
+                            <span>+91 1800 123 4567</span>
+                        </li>
+                        <li>
+                            <i data-lucide="mail"></i>
+                            <span>info@medicare-example.com</span>
+                        </li>
+                        <li>
+                            <i data-lucide="clock"></i>
+                            <span>Mon-Sat: 8:00 AM - 10:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2025</span> MediCare. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <button id="chat-toggle" class="chat-toggle">
+            <i data-lucide="message-circle"></i>
+        </button>
+        
+        <div id="chat-window" class="chat-window hidden">
+            <div class="chat-header">
+                <h3>MediCare Chat</h3>
+                <button id="close-chat" class="close-chat">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="chat-messages"></div>
+            
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Type your message..." disabled>
+                <button class="send-button" disabled>
+                    <i data-lucide="send"></i>
+                </button>
+            </div>
+            
+            <div class="login-prompt">
+                Please <a href="../login.html">log in</a> to chat with our support team
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // Check login state
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            document.querySelectorAll('[data-auth-hide]').forEach(el => {
+                el.style.display = isLoggedIn ? 'none' : '';
+            });
+            document.querySelectorAll('[data-auth-show]').forEach(el => {
+                el.style.display = isLoggedIn ? '' : 'none';
+            });
+            
+            // File upload handling
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileInput = document.getElementById('prescriptionUpload');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            
+            uploadBtn?.addEventListener('click', () => {
+                fileInput?.click();
+            });
+            
+            fileInput?.addEventListener('change', (e) => {
+                const fileName = e.target.files[0]?.name || 'No file chosen';
+                fileNameDisplay.textContent = fileName;
+            });
+            
+
+            
+            // Update current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        });
+    </script>
+    <script>
+        // Check login status
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        if (!isLoggedIn) {
+            window.location.replace('login.html');
+            return;
+        }
+
+        // Update user information in dropdown
+        const userName = localStorage.getItem('userName') || 'User';
+        const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+        
+        document.getElementById('userNameDisplay').textContent = userName;
+        document.getElementById('userFullName').textContent = userName;
+        document.getElementById('userEmail').textContent = userEmail;
+
+        // Handle dropdown toggle
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        
+        // Toggle dropdown on click
+        dropdownToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownToggle.classList.toggle('active');
+            dropdownMenu.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+                dropdownToggle.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        dropdownMenu.addEventListener('click', (e) => {
+            if (!e.target.closest('#logoutBtn')) {
+                e.stopPropagation();
+            }
+        });
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            const loader = document.createElement('div');
+            loader.className = 'page-loader';
+            loader.innerHTML = '<span class="loader"></span>';
+            document.body.appendChild(loader);
+            
+            // Clear user data
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
+            
+            // Redirect with slight delay for smooth transition
+            setTimeout(() => {
+                window.location.replace('../index.html');
+            }, 500);
+        });
+    </script>
+    <script src="../main.js"></script>
+    <script src="../medicine-delivery.js"></script>
+    <script src="../js/medicine-cart.js"></script>
+    <style>
+        /* Dropdown Menu Styles */
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 2rem;
+        }
+
+        .user-profile {
+            margin-left: auto;
+        }
+
+        .user-dropdown {
+            position: relative;
+            z-index: 100;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: rgb(var(--primary-rgb));
+            transform: translateX(2px);
+        }
+
+        .dropdown-item i {
+            flex-shrink: 0;
+        }
+
+        .dropdown-header {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .text-danger {
+            color: #ff4444 !important;
+        }
+
+        .text-danger:hover {
+            background: rgba(255, 68, 68, 0.15) !important;
+            color: #ff6666 !important;
+            transform: translateX(2px);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        .icon-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-profile {
+                margin-left: 0;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare - Healthcare Solutions</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="futuristic-theme.css">
+    <link rel="stylesheet" href="styles/navbar-footer.css">
+    <!-- Three.js and GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <!-- Spline for DNA Animation -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.79/build/spline-viewer.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Navbar Styles */
+        .cyber-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(5, 7, 20, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* DNA Model Container */
+        .dna-model-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        spline-viewer {
+            width: 100%;
+            height: 100%;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        /* Appointment Section */
+        .appointment-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+            padding: 4rem 0;
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-panel h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-panel .subtitle {
+            color: rgba(var(--text-rgb), 0.7);
+            margin-bottom: 2rem;
+        }
+
+        .cyber-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .cyber-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(var(--text-rgb), 0.9);
+            font-weight: 500;
+        }
+
+        .cyber-form input,
+        .cyber-form select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(var(--primary-rgb), 0.3);
+            border-radius: 0.5rem;
+            color: rgba(var(--text-rgb), 0.9);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-form input:focus,
+        .cyber-form select:focus {
+            outline: none;
+            border-color: rgba(var(--primary-rgb), 0.8);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .cyber-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            padding-right: 3rem;
+        }
+
+        .cyber-form input[type="date"] {
+            padding-right: 1rem;
+        }
+
+        .cyber-form input::placeholder {
+            color: rgba(var(--text-rgb), 0.5);
+        }
+
+        .cyber-form button[type="submit"] {
+            width: 100%;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .appointment-section {
+                grid-template-columns: 1fr;
+            }
+
+            .dna-model-container {
+                height: 400px;
+            }
+        }
+
+        /* Glowing Orbs Background */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.3), transparent 70%);
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.2), transparent 70%);
+            width: 300px;
+            height: 300px;
+            bottom: 10%;
+            left: -50px;
+        }
+        .dashboard-section {
+            min-height: 100vh;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .dashboard-card {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(var(--primary-rgb), 0.4);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(var(--primary-rgb), 0.1);
+            border-radius: 0.5rem;
+            color: rgb(var(--primary-rgb));
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: rgba(var(--text-rgb), 0.9);
+        }
+
+        .card-content {
+            color: rgba(var(--text-rgb), 0.7);
+        }
+
+        .card-action {
+            margin-top: 1rem;
+            text-align: right;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.3), transparent 70%);
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.2), transparent 70%);
+            width: 300px;
+            height: 300px;
+            bottom: 10%;
+            left: -50px;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.1), rgba(var(--accent-rgb), 0.1));
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-subtitle {
+            color: rgba(var(--text-rgb), 0.7);
+            margin-bottom: 1.5rem;
+        }
+
+        /* User Dropdown */
+        .user-dropdown {
+            position: relative;
+            margin-left: 1rem;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: rgb(var(--primary-rgb));
+            transform: translateX(2px);
+        }
+
+        .dropdown-item i {
+            flex-shrink: 0;
+        }
+
+        .text-danger {
+            color: #ff4444 !important;
+        }
+
+        .text-danger:hover {
+            background: rgba(255, 68, 68, 0.15) !important;
+            color: #ff6666 !important;
+            transform: translateX(2px);
+        }
+
+        /* Ensure dropdown container doesn't interfere */
+        .user-dropdown {
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Update navigation styles */
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 2rem;
+        }
+
+        .user-profile {
+            margin-left: auto;
+        }
+
+        /* Keep existing dropdown styles */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-profile {
+                margin-left: 0;
+            }
+        }
+
+        /* Reviews Section Styles */
+        .reviews-section {
+            padding: 4rem 0;
+            margin-top: 2rem;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .review-card {
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(var(--primary-rgb), 0.4);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .reviewer-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(var(--primary-rgb), 0.3);
+        }
+
+        .reviewer-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .review-text {
+            color: rgba(var(--text-rgb), 0.8);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Testimonials Section Styles */
+        .testimonials-section {
+            padding: 4rem 0;
+            margin-top: 2rem;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .testimonial-card {
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(var(--primary-rgb), 0.4);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .testimonial-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(var(--primary-rgb), 0.3);
+            object-fit: cover;
+        }
+
+        .testimonial-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .testimonial-text {
+            color: rgba(var(--text-rgb), 0.8);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- Header -->
+        <!-- Header -->
+    <header id="header" class="cyber-nav">
+        <nav class="container">
+            <a href="index.html" class="logo">MediCare</a>
+            <button class="mobile-menu-toggle">
+                <i data-lucide="menu"></i>
+            </button>
+            <div class="nav-links">
+                <a href="loggedin.html">Home</a>
+                <a href="ai-doctor.html">AI Doctor</a>
+                <a href="appointment.html">Appointments</a>
+                <a href="hospital-beds.html">Hospital Beds</a>
+                <a href="medicine-delivery.html">Medicine</a>
+                <a href="training.html">Training</a>
+                <a href="about.html">About</a>
+            </div>
+            <div class="user-dropdown">
+                <button class="dropdown-toggle">
+                    <i data-lucide="user"></i>
+                    <span id="userNameDisplay">User</span>
+                    <i data-lucide="chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <i data-lucide="user"></i>
+                        <div class="user-info">
+                            <span id="userFullName">User</span>
+                            <span id="userEmail" class="user-email">user@example.com</span>
+                        </div>
+                    </div>
+                    <a href="profile.html" class="dropdown-item">
+                        <i data-lucide="user"></i>
+                        Profile
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i data-lucide="settings"></i>
+                        Settings
+                    </a>
+                    <a href="#" class="dropdown-item text-danger" id="logoutBtn">
+                        <i data-lucide="log-out"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="appointment-section">
+                <!-- Appointment Form -->
+                <div class="hero-content">
+                    <h1 class="hero-title fade-in">Advanced Healthcare Solutions for Everyone</h1>
+                    <p class="hero-subtitle fade-in">Experience the future of healthcare with our AI-powered services and remote consultations from top medical professionals.</p>
+                    <div class="hero-buttons fade-in">
+                        <a href="ai-doctor.html" class="btn btn-primary btn-lg">
+                            <i data-lucide="activity"></i> Try AI Doctor
+                        </a>
+                        <a href="appointment.html" class="btn btn-outline btn-lg">
+                            <i data-lucide="calendar"></i> Book Appointment
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- DNA Model -->
+                <div class="dna-model-container glass-panel">
+                    <spline-viewer url="https://prod.spline.design/9kg4GfueaTBGmcSG/scene.splinecode"></spline-viewer>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services section-padding">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">Our Healthcare Services</h2>
+                <p class="section-subtitle">Comprehensive solutions for your well-being</p>
+            </div>
+            
+            <div class="services-grid fade-in">
+                <div class="service-card feature-card">
+                    <div class="service-icon">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <h3>AI Health Assistant</h3>
+                    <p>Get instant medical help from our Gemini AI that checks symptoms and gives treatment advice.</p>
+                    <a href="ai-doctor.html" class="btn btn-primary btn-sm">Try Now</a>
+                </div>
+                
+                <div class="service-card feature-card">
+                    <div class="service-icon">
+                        <i data-lucide="pill"></i>
+                    </div>
+                    <h3>Medicine Delivery</h3>
+                    <p>Order prescription and over-the-counter medicines for quick and reliable doorstep delivery.</p>
+                    <a href="medicine-delivery.html" class="btn btn-primary btn-sm">Order Now</a>
+                </div>
+                
+                <div class="service-card feature-card">
+                    <div class="service-icon">
+                        <i data-lucide="stethoscope"></i>
+                    </div>
+                    <h3>Doctor Appointment</h3>
+                    <p>Connect with experienced doctors for virtual or in-person consultations at your convenience.</p>
+                    <a href="appointment.html" class="btn btn-primary btn-sm">Book Now</a>
+                </div>
+                
+                <div class="service-card feature-card">
+                    <div class="service-icon">
+                        <i data-lucide="building-2"></i>
+                    </div>
+                    <h3>Hospital Bed Booking</h3>
+                    <p>Reserve hospital beds in advance at partner hospitals and ensure timely care during emergencies.</p>
+                    <a href="hospital-beds.html" class="btn btn-primary btn-sm">Check Availability</a>
+                </div>
+                
+                <div class="service-card feature-card">
+                    <div class="service-icon">
+                        <i data-lucide="graduation-cap"></i>
+                    </div>
+                    <h3>Medical Training</h3>
+                    <p>Access comprehensive training programs and resources for healthcare professionals and students.</p>
+                    <a href="training.html" class="btn btn-primary btn-sm">Explore Courses</a>
+                </div>
+            </div>
+        </div>
+        <br>
+    </section>
+
+    <!-- Appointment Section -->
+    <section class="appointment section-padding bg-medicare-gradient"style="background: rgba(20, 20, 35, 0.95); backdrop-filter: blur(10px);">
+        <div class="container">
+            <br>
+            <div class="appointment-grid">
+                <div class="appointment-content fade-in">
+                    <h2 class="section-title">Book an Appointment</h2>
+                    <p class="section-subtitle">Schedule a consultation with our experienced doctors</p>
+                    
+                    <ul class="appointment-features">
+                        <li>
+                            <i data-lucide="check-circle"></i>
+                            <span>Choose from 100+ specialists</span>
+                        </li>
+                        <li>
+                            <i data-lucide="check-circle"></i>
+                            <span>Same-day appointments available</span>
+                        </li>
+                        <li>
+                            <i data-lucide="check-circle"></i>
+                            <span>Video consultations option</span>
+                        </li>
+                        <li>
+                            <i data-lucide="check-circle"></i>
+                            <span>Free follow-up check</span>
+                        </li>
+                    </ul>
+
+                    <div class="appointment-cta">
+                        <a href="appointment.html" class="btn btn-primary btn-lg">
+                            <i data-lucide="calendar"></i>
+                            Book Your Appointment
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section container">
+        <h2 class="section-title">Patient Testimonials</h2>
+        <p class="section-subtitle">What our patients say about us</p>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <img src="./assets/testemonial1.png" alt="Sarah Johnson" class="testimonial-image">
+                <h3 class="testimonial-name">Sarah Johnson</h3>
+                <p class="testimonial-text">"The AI Doctor feature is amazing! Got quick and accurate advice for my symptoms. The follow-up appointment booking was seamless."</p>
+            </div>
+            <div class="testimonial-card">
+                <img src="./assets/testemonial2.png" alt="Michael Chen" class="testimonial-image">
+                <h3 class="testimonial-name">Michael Chen</h3>
+                <p class="testimonial-text">"Excellent service! The hospital bed booking system saved me so much time. The staff was incredibly professional and caring."</p>
+            </div>
+            <div class="testimonial-card">
+                <img src="./assets/testemonial3.png" alt="Emily Rodriguez" class="testimonial-image">
+                <h3 class="testimonial-name">Emily Rodriguez</h3>
+                <p class="testimonial-text">"The medicine delivery service is a game-changer. Received my prescriptions right at my doorstep within hours."</p>
+            </div>
+            <div class="testimonial-card">
+                <img src="./assets/testemonial4.png" alt="David Smith" class="testimonial-image">
+                <h3 class="testimonial-name">David Smith</h3>
+                <p class="testimonial-text">"Very impressed with the virtual consultations. The doctors are knowledgeable and take time to explain everything clearly."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <!-- <section class="reviews-section container">
+        <h2 class="section-title">Patient Reviews</h2>
+        <p class="section-subtitle">What our patients say about us</p>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <img src="assets/reviewer1.jpg" alt="Sarah Johnson" class="reviewer-image">
+                <h3 class="reviewer-name">Sarah Johnson</h3>
+                <p class="review-text">"The AI Doctor feature is amazing! Got quick and accurate advice for my symptoms. The follow-up appointment booking was seamless."</p>
+            </div>
+            <div class="review-card">
+                <img src="assets/reviewer2.jpg" alt="Michael Chen" class="reviewer-image">
+                <h3 class="reviewer-name">Michael Chen</h3>
+                <p class="review-text">"Excellent service! The hospital bed booking system saved me so much time. The staff was incredibly professional and caring."</p>
+            </div>
+            <div class="review-card">
+                <img src="assets/reviewer3.jpg" alt="Emily Rodriguez" class="reviewer-image">
+                <h3 class="reviewer-name">Emily Rodriguez</h3>
+                <p class="review-text">"The medicine delivery service is a game-changer. Received my prescriptions right at my doorstep within hours."</p>
+            </div>
+            <div class="review-card">
+                <img src="assets/reviewer4.jpg" alt="David Smith" class="reviewer-image">
+                <h3 class="reviewer-name">David Smith</h3>
+                <p class="review-text">"Very impressed with the virtual consultations. The doctors are knowledgeable and take time to explain everything clearly."</p>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Stats Section -->
+    <section class="stats section-padding bg-primary-light" style="background: rgba(20, 20, 35, 0.95); backdrop-filter: blur(10px);">
+        <div class="container">
+            <br>
+            <br>
+            <div class="stats-grid fade-in">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div class="stat-number" data-count="50000">0</div>
+                    <div class="stat-label">Patients Served</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="stethoscope"></i>
+                    </div>
+                    <div class="stat-number" data-count="200">0</div>
+                    <div class="stat-label">Expert Doctors</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="activity"></i>
+                    </div>
+                    <div class="stat-number" data-count="30000">0</div>
+                    <div class="stat-label">Successful Treatments</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="award"></i>
+                    </div>
+                    <div class="stat-number" data-count="15">0</div>
+                    <div class="stat-label">Years of Experience</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <div class="stat-number" data-count="98.12">0</div>
+                    <div class="stat-label">Bot Accuracy</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta section-padding" style="background: rgba(20, 20, 35, 0.95); backdrop-filter: blur(10px);">
+        <div class="container">
+            <div class="cta-content fade-in">
+                <h2 class="cta-title">Ready to experience better healthcare?</h2>
+                <p class="cta-subtitle">Sign up now and get a free health consultation with our experts.</p>
+                <div class="cta-buttons">
+                    <a href="signup.html" class="btn btn-primary btn-lg">Get Started</a>
+                    <a href="about.html" class="btn btn-outline btn-lg">Learn More</a>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="cyber-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h3>MediCare</h3>
+                    <p>Providing quality healthcare services and innovative solutions to improve your wellbeing.</p>
+                    <div class="social-links">
+                        <a href="#"><i data-lucide="facebook"></i></a>
+                        <a href="#"><i data-lucide="twitter"></i></a>
+                        <a href="#"><i data-lucide="instagram"></i></a>
+                        <a href="#"><i data-lucide="linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="ai-doctor.html">AI Doctor</a></li>
+                        <li><a href="training.html">Training</a></li>
+                        <li><a href="medicine-delivery.html">Medicine Delivery</a></li>
+                        <li><a href="hospital-beds.html">Hospital Beds</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Telemedicine</a></li>
+                        <li><a href="#">Health Checkups</a></li>
+                        <li><a href="#">Medical Tourism</a></li>
+                        <li><a href="#">Home Healthcare</a></li>
+                        <li><a href="#">Emergency Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul class="contact-info">
+                        <li>
+                            <i data-lucide="map-pin"></i>
+                            123 Healthcare Avenue, Medical District, City, Country
+                        </li>
+                        <li>
+                            <i data-lucide="phone"></i>
+                            +91 1800 123 4567
+                        </li>
+                        <li>
+                            <i data-lucide="mail"></i>
+                            info@medicare-example.com
+                        </li>
+                        <li>
+                            <i data-lucide="clock"></i>
+                            Mon-Sat: 8:00 AM - 10:00 PM
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="footer-bottom">
+                <p>&copy; 2025 MediCare. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Icon -->
+    <div class="chat-toggle-container">
+        <button id="chat-toggle" class="chat-toggle">
+            <i data-lucide="message-circle"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="common.js"></script>
+    <script src="main.js"></script>
+    <script src="index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide icons
+            lucide.createIcons();
+
+            // Check login status
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                window.location.replace('login.html');
+                return;
+            }
+
+            // Update user information in dropdown
+            const userName = localStorage.getItem('userName') || 'User';
+            const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+            
+            document.getElementById('userNameDisplay').textContent = userName;
+            document.getElementById('userFullName').textContent = userName;
+            document.getElementById('userEmail').textContent = userEmail;
+
+            // Handle dropdown toggle
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            // Toggle dropdown on click
+            dropdownToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownToggle.classList.toggle('active');
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownToggle.classList.remove('active');
+                }
+            });
+
+            // Mobile menu toggle
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            dropdownMenu.addEventListener('click', (e) => {
+                if (!e.target.closest('#logoutBtn')) {
+                    e.stopPropagation();
+                }
+            });
+
+            // Handle logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Show loading state
+                const loader = document.createElement('div');
+                loader.className = 'page-loader';
+                loader.innerHTML = '<span class="loader"></span>';
+                document.body.appendChild(loader);
+                
+                // Clear user data
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                
+                // Redirect with slight delay for smooth transition
+                setTimeout(() => {
+                    window.location.replace('index.html');
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

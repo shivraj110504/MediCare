@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Beds - MediCare</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../futuristic-theme.css">
+    <link rel="stylesheet" href="../toast-custom.css">
+    <link rel="stylesheet" href="../hospital-beds.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Navbar Styles */
+        .cyber-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(5, 7, 20, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* DNA Model Container */
+        .dna-model-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        spline-viewer {
+            width: 100%;
+            height: 100%;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        /* Appointment Section */
+        .appointment-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+            padding: 4rem 0;
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-panel h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-panel .subtitle {
+            color: rgba(var(--text-rgb), 0.7);
+            margin-bottom: 2rem;
+        }
+
+        .cyber-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .cyber-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(var(--text-rgb), 0.9);
+            font-weight: 500;
+        }
+
+        .cyber-form input,
+        .cyber-form select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(var(--primary-rgb), 0.3);
+            border-radius: 0.5rem;
+            color: rgba(var(--text-rgb), 0.9);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-form input:focus,
+        .cyber-form select:focus {
+            outline: none;
+            border-color: rgba(var(--primary-rgb), 0.8);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .cyber-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            padding-right: 3rem;
+        }
+
+        .cyber-form input[type="date"] {
+            padding-right: 1rem;
+        }
+
+        .cyber-form input::placeholder {
+            color: rgba(var(--text-rgb), 0.5);
+        }
+
+        .cyber-form button[type="submit"] {
+            width: 100%;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .appointment-section {
+                grid-template-columns: 1fr;
+            }
+
+            .dna-model-container {
+                height: 400px;
+            }
+        }
+
+        /* Glowing Orbs Background */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.3), transparent 70%);
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.2), transparent 70%);
+            width: 300px;
+            height: 300px;
+            bottom: 10%;
+            left: -50px;
+        }
+
+        /* Dropdown Menu Styles */
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 2rem;
+        }
+
+        .user-profile {
+            margin-left: auto;
+        }
+
+        .user-dropdown {
+            position: relative;
+            z-index: 100;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: rgb(var(--primary-rgb));
+            transform: translateX(2px);
+        }
+
+        .dropdown-item i {
+            flex-shrink: 0;
+        }
+
+        .dropdown-header {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .text-danger {
+            color: #ff4444 !important;
+        }
+
+        .text-danger:hover {
+            background: rgba(255, 68, 68, 0.15) !important;
+            color: #ff6666 !important;
+            transform: translateX(2px);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        .icon-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-profile {
+                margin-left: 0;
+            }
+        }
+
+        /* Hospital Cards Grid */
+        .hospitals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .hospital-card {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hospital-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hospital-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Booking Form Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgb(var(--primary-rgb));
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(var(--primary-rgb), 0.95);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Header -->
+    <header class="cyber-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-text neon-text">MediCare</div>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="ai-doctor.html" class="nav-link">AI Doctor</a>
+                <a href="appointment.html" class="nav-link">Appointments</a>
+                <a href="hospital-beds.html" class="nav-link active">Hospital Beds</a>
+                <a href="training.html" class="nav-link">Training</a>
+                <a href="medicine.html" class="nav-link">Medicine</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+
+            <!-- User Profile on Right -->
+            <!-- <div class="user-profile">
+                <div class="user-dropdown">
+                    <button class="dropdown-toggle">
+                        <i data-lucide="user-circle" class="icon-sm"></i>
+                        <span id="userNameDisplay">Guest</span>
+                        <i data-lucide="chevron-down" class="icon-sm"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <i data-lucide="user" class="icon-sm"></i>
+                                <div>
+                                    <div id="userFullName" class="user-name">User Name</div>
+                                    <div id="userEmail" class="user-email">user@example.com</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="user" class="icon-sm"></i>
+                            Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="settings" class="icon-sm"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn" class="dropdown-item text-danger">
+                            <i data-lucide="log-out" class="icon-sm"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="nav-right">
+                <div class="auth-buttons" data-auth-hide="false">
+                    <a href="../login.html" class="btn btn-outline btn-glow">Login</a>
+                    <a href="../signup.html" class="btn btn-primary btn-glow">Sign Up</a>
+                </div>
+                
+                <!-- <div class="user-profile" data-auth-show="false">
+                    <div class="user-info">
+                        <i data-lucide="user"></i>
+                        <span class="user-name">User</span>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" id="logoutBtn" class="dropdown-item">
+                            <i data-lucide="log-out"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content fade-in">
+                    <h1 class="hero-title">Hospital Bed Booking</h1>
+                    <p class="hero-subtitle">Find and reserve hospital beds across multiple facilities in real-time</p>
+                    <button class="btn btn-primary btn-lg mt-6" onclick="openBookingForm()">
+                        <i data-lucide="bed" class="icon-sm mr-2"></i>
+                        Book a Bed Now
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hospital Cards Section -->
+        <section class="hospitals-grid">
+            <!-- Hospital Card 1 -->
+            <div class="hospital-card">
+                <img src="../assets/Hos01.png" alt="City Hospital" class="hospital-image">
+                <h3 class="text-xl font-semibold mb-2">City Hospital</h3>
+                <p class="text-gray-400 mb-3">Specializing in emergency care and surgery</p>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm"><i data-lucide="map-pin" class="icon-sm inline mr-1"></i> Downtown</span>
+                    <span class="text-sm"><i data-lucide="bed" class="icon-sm inline mr-1"></i> 50 beds</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="btn btn-outline flex-1" onclick="showHospitalDetails('city')">
+                        <i data-lucide="info" class="icon-sm mr-1"></i> Details
+                    </button>
+                    <button class="btn btn-primary flex-1" onclick="openBookingModal('City Hospital')">
+                        <i data-lucide="calendar" class="icon-sm mr-1"></i> Book Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hospital Card 2 -->
+            <div class="hospital-card">
+                <img src="../assets/Hos02.png" alt="Metro Medical Center" class="hospital-image">
+                <h3 class="text-xl font-semibold mb-2">Metro Medical Center</h3>
+                <p class="text-gray-400 mb-3">Advanced medical care and specialized treatments</p>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm"><i data-lucide="map-pin" class="icon-sm inline mr-1"></i> Uptown</span>
+                    <span class="text-sm"><i data-lucide="bed" class="icon-sm inline mr-1"></i> 75 beds</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="btn btn-outline flex-1" onclick="showHospitalDetails('metro')">
+                        <i data-lucide="info" class="icon-sm mr-1"></i> Details
+                    </button>
+                    <button class="btn btn-primary flex-1" onclick="openBookingModal('Metro Medical Center')">
+                        <i data-lucide="calendar" class="icon-sm mr-1"></i> Book Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hospital Card 3 -->
+            <div class="hospital-card">
+                <img src="../assets/Hos03.jpeg" alt="Apollo Hospital" class="hospital-image">
+                <h3 class="text-xl font-semibold mb-2">Apollo Hospital</h3>
+                <p class="text-gray-400 mb-3">Multi-specialty healthcare excellence</p>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm"><i data-lucide="map-pin" class="icon-sm inline mr-1"></i> North City</span>
+                    <span class="text-sm"><i data-lucide="bed" class="icon-sm inline mr-1"></i> 100 beds</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="btn btn-outline flex-1" onclick="showHospitalDetails('apollo')">
+                        <i data-lucide="info" class="icon-sm mr-1"></i> Details
+                    </button>
+                    <button class="btn btn-primary flex-1" onclick="openBookingModal('Apollo Hospital')">
+                        <i data-lucide="calendar" class="icon-sm mr-1"></i> Book Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hospital Card 4 -->
+            <div class="hospital-card">
+                <img src="../assets/Hos04.jpg" alt="Fortis Healthcare" class="hospital-image">
+                <h3 class="text-xl font-semibold mb-2">Fortis Healthcare</h3>
+                <p class="text-gray-400 mb-3">Leading cardiac and critical care</p>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm"><i data-lucide="map-pin" class="icon-sm inline mr-1"></i> East City</span>
+                    <span class="text-sm"><i data-lucide="bed" class="icon-sm inline mr-1"></i> 80 beds</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="btn btn-outline flex-1" onclick="showHospitalDetails('fortis')">
+                        <i data-lucide="info" class="icon-sm mr-1"></i> Details
+                    </button>
+                    <button class="btn btn-primary flex-1" onclick="openBookingModal('Fortis Healthcare')">
+                        <i data-lucide="calendar" class="icon-sm mr-1"></i> Book Now
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Form Modal -->
+        <div id="bookingModal" class="modal">
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeModal()">
+                    <i data-lucide="x" class="icon-md"></i>
+                </button>
+                <h2 class="text-2xl font-semibold mb-4">Book a Hospital Bed</h2>
+                <form id="bookingForm" onsubmit="handleBooking(event)">
+                    <div class="form-group">
+                        <label class="form-label">Patient Name</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Number</label>
+                        <input type="tel" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hospital</label>
+                        <select class="form-input" required>
+                            <option value="">Select Hospital</option>
+                            <option value="city">City Hospital</option>
+                            <option value="metro">Metro Medical Center</option>
+                            <option value="apollo">Apollo Hospital</option>
+                            <option value="fortis">Fortis Healthcare</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bed Type</label>
+                        <select class="form-input" required>
+                            <option value="">Select Bed Type</option>
+                            <option value="general">General Ward</option>
+                            <option value="private">Private Room</option>
+                            <option value="icu">ICU</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Check-in Date</label>
+                        <input type="date" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Number of Days</label>
+                        <input type="number" min="1" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Book Now</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer" style="background-color: #0a1020;">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <h3 class="footer-logo"  style="color: #00a8ff;">MediCare</h3>
+                        <p class="footer-description">
+                            Providing advanced healthcare solutions with a perfect blend of technology and medical expertise.
+                        </p>
+                    </div>
+                    
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="ai-doctor.html">AI Doctor</a></li>
+                            <li><a href="appointment.html">Book Appointment</a></li>
+                            <li><a href="medicine-delivery.html">Medicine Delivery</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-col">
+                        <h4>Contact Us</h4>
+                        <ul class="footer-links">
+                            <li><i data-lucide="mail"></i> support@medicare.com</li>
+                            <li><i data-lucide="phone"></i> +1 234 567 890</li>
+                            <li><i data-lucide="map-pin"></i> 123 Healthcare St, Medical City</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-col">
+                        <h4>Follow Us</h4>
+                        <div class="social-links">
+                            <a href="#"><i data-lucide="facebook"></i></a>
+                            <a href="#"><i data-lucide="twitter"></i></a>
+                            <a href="#"><i data-lucide="instagram"></i></a>
+                            <a href="#"><i data-lucide="linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>&copy; <span id="current-year">2024</span> MediCare. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../common.js"></script>
+    <script src="../hospital-beds.js"></script>
+    <script>
+        // Show/hide booking modal
+        function openBookingModal(hospitalName) {
+            document.getElementById('bookingModal').classList.add('show');
+            // Pre-select the hospital in the dropdown
+            const hospitalSelect = document.querySelector('select');
+            const value = hospitalName.toLowerCase().replace(/\s+/g, '-');
+            hospitalSelect.value = value;
+        }
+
+        // Open booking form from hero section
+        function openBookingForm() {
+            document.getElementById('bookingModal').classList.add('show');
+            // Don't pre-select any hospital
+            const hospitalSelect = document.querySelector('select');
+            hospitalSelect.value = '';
+        }
+
+        // Show hospital details
+        function showHospitalDetails(hospitalId) {
+            const hospitalInfo = {
+                city: {
+                    name: 'City Hospital',
+                    description: 'Leading emergency care facility with state-of-the-art surgical units.',
+                    facilities: ['24/7 Emergency', 'ICU', 'Surgery', 'Pharmacy'],
+                    contact: '+91 1234567890'
+                },
+                metro: {
+                    name: 'Metro Medical Center',
+                    description: 'Advanced medical care center with specialized treatment units.',
+                    facilities: ['Specialized Care', 'Modern Equipment', 'Research Center'],
+                    contact: '+91 2345678901'
+                },
+                apollo: {
+                    name: 'Apollo Hospital',
+                    description: 'Multi-specialty healthcare provider with world-class facilities.',
+                    facilities: ['Cardiology', 'Neurology', 'Oncology', 'Pediatrics'],
+                    contact: '+91 3456789012'
+                },
+                fortis: {
+                    name: 'Fortis Healthcare',
+                    description: 'Premier cardiac and critical care institution.',
+                    facilities: ['Cardiac Care', 'Critical Care', 'Diagnostics'],
+                    contact: '+91 4567890123'
+                }
+            };
+
+            const hospital = hospitalInfo[hospitalId];
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <h3 class="font-semibold mb-2">${hospital.name}</h3>
+                <p class="mb-2">${hospital.description}</p>
+                <p class="mb-1"><strong>Facilities:</strong> ${hospital.facilities.join(', ')}</p>
+                <p><strong>Contact:</strong> ${hospital.contact}</p>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('bookingModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check login status
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                window.location.replace('login.html');
+                return;
+            }
+
+            // Update user information in dropdown
+            const userName = localStorage.getItem('userName') || 'User';
+            const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+            
+            document.getElementById('userNameDisplay').textContent = userName;
+            document.getElementById('userFullName').textContent = userName;
+            document.getElementById('userEmail').textContent = userEmail;
+
+            // Handle dropdown toggle
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            // Toggle dropdown on click
+            dropdownToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownToggle.classList.toggle('active');
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownToggle.classList.remove('active');
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            dropdownMenu.addEventListener('click', (e) => {
+                if (!e.target.closest('#logoutBtn')) {
+                    e.stopPropagation();
+                }
+            });
+
+            // Handle logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Show loading state
+                const loader = document.createElement('div');
+                loader.className = 'page-loader';
+                loader.innerHTML = '<span class="loader"></span>';
+                document.body.appendChild(loader);
+                
+                // Clear user data
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                
+                // Redirect with slight delay for smooth transition
+                setTimeout(() => {
+                    window.location.replace('../index.html');
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

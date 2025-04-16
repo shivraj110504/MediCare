@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MediCare</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="futuristic-theme.css">
+    <link rel="stylesheet" href="styles/navbar-footer.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .login-container {
+            padding-top: 80px; /* Add padding for navbar */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-form {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgb(var(--primary-rgb));
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgb(var(--primary-rgb));
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-submit:hover {
+            background: rgb(var(--primary-dark-rgb));
+            transform: translateY(-2px);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-footer a {
+            color: rgb(var(--primary-rgb));
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Background orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.3), transparent 70%);
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.3), transparent 70%);
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            left: -50px;
+        }
+
+        /* Loading animation */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 20, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(var(--primary-rgb), 0.3);
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        .loader::after {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-bottom-color: rgb(var(--primary-rgb));
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="navbar-placeholder"></div>
+
+    <div class="login-container">
+        <!-- Background orbs -->
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+
+        <!-- Login form -->
+        <form class="login-form" id="loginForm">
+            <div class="brand">
+                <h1 class="brand-name">MediCare</h1>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="form-submit">
+                <span>Login</span>
+            </button>
+
+            <div class="form-footer">
+                Don't have an account? <a href="signup.html">Sign up</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="common.js"></script>
+    <script>
+        // Load navbar and footer
+        fetch('components/navbar-footer.html')
+            .then(response => response.text())
+            .then(data => {
+                // Insert navbar
+                const navbarPlaceholder = document.getElementById('navbar-placeholder');
+                const navbarContent = data.split('<!-- Footer -->')[0];
+                navbarPlaceholder.innerHTML = navbarContent;
+
+                // Insert footer
+                const footerPlaceholder = document.getElementById('footer-placeholder');
+                const footerContent = data.split('<!-- Footer -->')[1];
+                footerPlaceholder.innerHTML = footerContent;
+
+                // Initialize Lucide icons
+                lucide.createIcons();
+
+                // Hide user dropdown if already logged in
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) {
+                    window.location.replace('loggedin.html');
+                }
+            });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            const loader = document.createElement('div');
+            loader.className = 'page-loader';
+            loader.innerHTML = '<span class="loader"></span>';
+            document.body.appendChild(loader);
+            
+            // Get form data
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Store user data (in a real app, this would come from the API)
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userName', email.split('@')[0]);
+                
+                // Redirect to loggedin page
+                window.location.replace('loggedin.html');
+            } catch (error) {
+                console.error('Login failed:', error);
+                // Remove loader
+                loader.remove();
+                // Show error message
+                alert('Login failed. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

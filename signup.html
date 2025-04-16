@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - MediCare</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="futuristic-theme.css">
+    <link rel="stylesheet" href="styles/navbar-footer.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .signup-container {
+            padding-top: 120px;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a14;
+        }
+
+        .signup-form {
+            background: rgba(13, 12, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00e5ff, #00b8d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        .brand-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0.75rem 0 2rem;
+        }
+
+        .social-signup {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            background: rgba(20, 20, 35, 0.5);
+            color: #ffffff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: rgba(30, 30, 50, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .social-btn img {
+            width: 20px;
+            height: 20px;
+            opacity: 0.9;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 2rem 0;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group .icon {
+            position: absolute;
+            left: -2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            width: 1.25rem;
+            height: 1.25rem;
+            z-index: 2;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.1);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+
+        .terms-checkbox input[type="checkbox"]:checked {
+            background: rgba(0, 229, 255, 0.9);
+            border-color: transparent;
+        }
+
+        .terms-checkbox a {
+            color: #00e5ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        .create-account-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #00e5ff, #00b8d4);
+            color: #fff;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .create-account-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 229, 255, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .login-link a {
+            color: #00e5ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .signup-container {
+                padding-top: 100px;
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-signup {
+                grid-template-columns: 1fr;
+            }
+
+            .signup-form {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="navbar-placeholder"></div>
+
+    <div class="signup-container">
+        <form class="signup-form" id="signupForm">
+            <div class="brand">
+                <h1 class="brand-name">MediCare</h1>
+                <p class="brand-subtitle">Join MediCare for personalized healthcare</p>
+            </div>
+
+            <div class="social-signup">
+                <button type="button" class="social-btn">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
+                    Google
+                </button>
+                <button type="button" class="social-btn">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" alt="Facebook">
+                    Facebook
+                </button>
+            </div>
+
+            <div class="divider">
+                <span>or sign up with email</span>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <i data-lucide="user" class="icon"></i>
+                    <input type="text" class="form-input" id="firstName" placeholder="First Name" required>
+                    <div class="error-message" id="firstNameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <!-- <i data-lucide="user" class="icon"></i> -->
+                    <input type="text" class="form-input" id="lastName" placeholder="Last Name" required>
+                    <div class="error-message" id="lastNameError"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <i data-lucide="mail" class="icon"></i>
+                <input type="email" class="form-input" id="email" placeholder="Email Address" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <i data-lucide="phone" class="icon"></i>
+                <input type="tel" class="form-input" id="phone" placeholder="Phone Number" required>
+                <div class="error-message" id="phoneError"></div>
+            </div>
+
+            <div class="form-group">
+                <i data-lucide="lock" class="icon"></i>
+                <input type="password" class="form-input" id="password" placeholder="Password" required>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="form-group">
+                <i data-lucide="lock" class="icon"></i>
+                <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm Password" required>
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+
+            <label class="terms-checkbox">
+                <input type="checkbox" id="terms" required>
+                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </label>
+
+            <button type="submit" class="create-account-btn">Create Account</button>
+
+            <div class="login-link">
+                Already have an account? <a href="login.html">Login</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="common.js"></script>
+    <script>
+        // Load navbar and footer
+        fetch('components/navbar-footer.html')
+            .then(response => response.text())
+            .then(data => {
+                const navbarPlaceholder = document.getElementById('navbar-placeholder');
+                const navbarContent = data.split('<!-- Footer -->')[0];
+                navbarPlaceholder.innerHTML = navbarContent;
+
+                const footerPlaceholder = document.getElementById('footer-placeholder');
+                const footerContent = data.split('<!-- Footer -->')[1];
+                footerPlaceholder.innerHTML = footerContent;
+
+                lucide.createIcons();
+
+                // Redirect if already logged in
+                if (localStorage.getItem('isLoggedIn') === 'true') {
+                    window.location.replace('loggedin.html');
+                }
+            });
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.textContent = '';
+                el.classList.remove('show');
+            });
+            
+            // Get form data
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validate form data
+            let hasError = false;
+            
+            if (!firstName || firstName.length < 2) {
+                document.getElementById('firstNameError').textContent = 'First name must be at least 2 characters';
+                document.getElementById('firstNameError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!lastName || lastName.length < 2) {
+                document.getElementById('lastNameError').textContent = 'Last name must be at least 2 characters';
+                document.getElementById('lastNameError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                document.getElementById('emailError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!phone || !phone.match(/^\d{10}$/)) {
+                document.getElementById('phoneError').textContent = 'Please enter a valid 10-digit phone number';
+                document.getElementById('phoneError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!password || password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
+                document.getElementById('passwordError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                document.getElementById('confirmPasswordError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!terms) {
+                alert('Please accept the Terms of Service and Privacy Policy');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+
+            try {
+                // Store user data (in production, this would be an API call)
+                const fullName = `${firstName} ${lastName}`;
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userName', fullName);
+                localStorage.setItem('userPhone', phone);
+                
+                // Redirect to loggedin page
+                window.location.replace('loggedin.html');
+            } catch (error) {
+                console.error('Signup failed:', error);
+                document.getElementById('emailError').textContent = 'Failed to create account. Please try again.';
+                document.getElementById('emailError').classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>

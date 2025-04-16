@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About MediCare - Healthcare Solutions</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../about.css">
+    <link rel="stylesheet" href="../futuristic-theme.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary-color: #00a8ff;
+            --primary-rgb: 0, 168, 255;
+            --accent-rgb: 255, 0, 128;
+        }
+
+        body {
+            background: #0a1020;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 2rem;
+        }
+
+        .user-profile {
+            margin-left: auto;
+            position: relative;
+            z-index: 9999;
+        }
+
+        .user-dropdown {
+            position: relative;
+            z-index: 9999;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: rgb(var(--primary-rgb));
+        }
+
+        .dropdown-item i {
+            flex-shrink: 0;
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .dropdown-header {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .text-danger {
+            color: #ff4444 !important;
+        }
+
+        .text-danger:hover {
+            background: rgba(255, 68, 68, 0.15) !important;
+            color: #ff6666 !important;
+        }
+
+        .icon-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-profile {
+                margin-left: 0;
+            }
+        }
+
+        /* Content Styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .text-gray-600 {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .bg-white {
+            background: rgba(20, 20, 35, 0.7);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .rounded-full {
+            border-radius: 50%;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-cols-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .icon-md {
+            width: 1.5rem;
+            height: 1.5rem;
+            vertical-align: middle;
+        }
+
+        /* User Profile Button Styles */
+        .user-profile {
+            position: relative;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: rgba(var(--primary-rgb), 0.2);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .username {
+            color: var(--primary-color);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2);
+            z-index: 1000;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Scroll Effects */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .header.scrolled {
+            background: rgba(10, 16, 32, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2);
+            border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+        }
+
+        /* Adjust main content padding for fixed header */
+        section {
+            padding-top: 5rem;
+        }
+
+        /* Glassmorphism cards on scroll */
+        .bg-white {
+            transition: all 0.3s ease;
+        }
+
+        .bg-white:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header" class="header cyber-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-text neon-text">MediCare</div>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="../index.html" class="nav-link" style="color: #fff;">Home</a>
+                <a href="ai-doctor.html" class="nav-link" style="color: #fff;">AI Doctor</a>
+                <a href="appointment.html" class="nav-link" style="color: #fff;">Appointments</a>
+                <a href="hospital-beds.html" class="nav-link" style="color: #fff;">Hospital Beds</a>
+                <a href="training.html" class="nav-link" style="color: #fff;">Training</a>
+                <a href="medicine.html" class="nav-link" style="color: #fff;">Medicine</a>
+                <a href="about.html" class="nav-link active" style="color: #fff;">About</a>
+            </nav>
+
+            <!-- User Profile on Right -->
+            <!-- <div class="user-profile">
+                <div class="user-dropdown">
+                    <button class="dropdown-toggle">
+                        <i data-lucide="user-circle" class="icon-sm"></i>
+                        <span id="userNameDisplay">Guest</span>
+                        <i data-lucide="chevron-down" class="icon-sm"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <i data-lucide="user" class="icon-sm"></i>
+                                <div>
+                                    <div id="userFullName" class="user-name">User Name</div>
+                                    <div id="userEmail" class="user-email">user@example.com</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="user" class="icon-sm"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="settings" class="icon-sm"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn" class="dropdown-item text-danger">
+                            <i data-lucide="log-out" class="icon-sm"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div> -->
+            
+        <div class="nav-right">
+            <div class="auth-buttons" data-auth-hide="false">
+                <a href="login.html" class="btn btn-outline btn-glow">Login</a>
+                <a href="signup.html" class="btn btn-primary btn-glow">Sign Up</a>
+            </div>
+            
+            <!-- <div class="user-profile" data-auth-show="false">
+                <div class="user-info">
+                    <i data-lucide="user"></i>
+                    <span class="user-name">User</span>
+                    <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="#" id="logoutBtn" class="dropdown-item">
+                        <i data-lucide="log-out"></i>
+                        Logout
+                    </a>
+                </div>
+            </div> -->
+        </div>
+        </div>
+
+        
+    </header>
+
+    <!-- Main Content -->
+    <section class="py-16">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-4">About MediCare</h1>
+                <p class="text-xl text-gray-600">
+                    Providing innovative healthcare solutions to improve lives worldwide
+                </p>
+            </div>
+            
+            <!-- Our Mission -->
+            <div class="grid grid-cols-2 gap-12 items-center mb-20">
+                <div>
+                    <img src="../assets/mission.png" alt="Our Mission" class="rounded-xl">
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold">Our Mission</h2>
+                    <p class="text-gray-600 mb-4">
+                        At MediCare, our mission is to provide accessible, high-quality healthcare services to everyone, regardless of location or socioeconomic status.
+                    </p>
+                    <div class="flex items-center">
+                        <i data-lucide="check-circle" class="icon-md mr-2"></i>
+                        <span>Making healthcare accessible to all</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Our Vision -->
+            <div class="grid grid-cols-2 gap-12 items-center mb-20">
+                <div>
+                    <img src="../assets/Vision.png" alt="Our Vision" class="rounded-xl">
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold">Our Vision</h2>
+                    <p class="text-gray-600 mb-4">
+                        We envision a world where quality healthcare is available to everyone, everywhere.
+                    </p>
+                    <div class="flex items-center">
+                        <i data-lucide="target" class="icon-md mr-2"></i>
+                        <span>Building the future of healthcare</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team Section -->
+            <div class="mb-20">
+                <h2 class="text-2xl font-bold mb-8 text-center">Our Leadership Team</h2>
+                <div class="grid grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl text-center">
+                        <img src="../assets/Dr01.png" alt="Dr. Smith" class="rounded-full w-32 h-32 mx-auto mb-4">
+                        <h3 class="text-xl font-bold">Dr. John Smith</h3>
+                        <p class="text-gray-600">Founder & CEO</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl text-center">
+                        <img src="../assets/Dr03.png" alt="Dr. Johnson" class="rounded-full w-32 h-32 mx-auto mb-4">
+                        <h3 class="text-xl font-bold">Dr. Sarah Johnson</h3>
+                        <p class="text-gray-600">Chief Medical Officer</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl text-center">
+                        <img src="../assets/Dr02.png" alt="Mr. Lee" class="rounded-full w-32 h-32 mx-auto mb-4">
+                        <h3 class="text-xl font-bold">Michael Lee</h3>
+                        <p class="text-gray-600">Chief Technology Officer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Our Values -->
+     <div class="mb-20">
+        <h2 class="text-2xl font-bold mb-8 text-center" style="color: #00a8ff;">Our Core Values</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 fade-in">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="heart" class="icon-md text-primary"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="color: #00a8ff;">Compassion</h3>
+                <p class="text-gray-600 text-sm">
+                    We approach healthcare with empathy and understanding, ensuring that every patient feels heard, respected, and cared for.
+                </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 fade-in">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="shield" class="icon-md text-primary"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="color: #00a8ff;">Integrity</h3>
+                <p class="text-gray-600 text-sm">
+                    We uphold the highest ethical standards in all our interactions, ensuring transparency, honesty, and accountability.
+                </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 fade-in">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="lightbulb" class="icon-md text-primary"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="color: #00a8ff;">Innovation</h3>
+                <p class="text-gray-600 text-sm">
+                    We continuously seek new and better ways to deliver healthcare, embracing technology and creative solutions.
+                </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 fade-in">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="check-square" class="icon-md text-primary"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2" style="color: #00a8ff;">Excellence</h3>
+                <p class="text-gray-600 text-sm">
+                    We strive for the highest quality in all our services, continuously improving and maintaining rigorous standards.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="background-color: #0a1020;">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 class="footer-logo" style="color: #00a8ff;">MediCare</h3>
+                    <p>Providing quality healthcare services and innovative solutions to improve your wellbeing.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i data-lucide="facebook"></i></a>
+                        <a href="#" class="social-link"><i data-lucide="twitter"></i></a>
+                        <a href="#" class="social-link"><i data-lucide="instagram"></i></a>
+                        <a href="#" class="social-link"><i data-lucide="linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="ai-doctor.html">AI Doctor</a></li>
+                        <li><a href="training.html">Training</a></li>
+                        <li><a href="medicine-delivery.html">Medicine Delivery</a></li>
+                        <li><a href="hospital-beds.html">Hospital Beds</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Telemedicine</a></li>
+                        <li><a href="#">Health Checkups</a></li>
+                        <li><a href="#">Medical Tourism</a></li>
+                        <li><a href="#">Home Healthcare</a></li>
+                        <li><a href="#">Emergency Services</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-list">
+                        <li>
+                            <i data-lucide="map-pin"></i>
+                            <span>123 Healthcare Avenue, Medical District, City, Country</span>
+                        </li>
+                        <li>
+                            <i data-lucide="phone"></i>
+                            <span>+91 1800 123 4567</span>
+                        </li>
+                        <li>
+                            <i data-lucide="mail"></i>
+                            <span>info@medicare-example.com</span>
+                        </li>
+                        <li>
+                            <i data-lucide="clock"></i>
+                            <span>Mon-Sat: 8:00 AM - 10:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2023</span> MediCare. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <button id="chat-toggle" class="chat-toggle">
+            <i data-lucide="message-circle"></i>
+        </button>
+        
+        <div id="chat-window" class="chat-window hidden">
+            <div class="chat-header">
+                <h3>MediCare Chat</h3>
+                <button id="close-chat" class="close-chat">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="chat-messages"></div>
+            
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Type your message..." disabled>
+                <button class="send-button" disabled>
+                    <i data-lucide="send"></i>
+                </button>
+            </div>
+            
+            <div class="login-prompt">
+                Please <a href="../login.html">log in</a> to chat with our support team
+            </div>
+        </div>
+    </div>
+
+    <script src="../main.js"></script>
+    <script src="../about.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide icons
+            lucide.createIcons();
+
+            // Check login status
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                window.location.replace('login.html');
+                return;
+            }
+
+            // Update user information
+            const userName = localStorage.getItem('userName') || 'User';
+            const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+            
+            document.getElementById('userNameDisplay').textContent = userName;
+            document.getElementById('userFullName').textContent = userName;
+            document.getElementById('userEmail').textContent = userEmail;
+
+            // Handle dropdown toggle
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            dropdownToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+                dropdownToggle.classList.toggle('active');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownToggle.classList.remove('active');
+                }
+            });
+
+            // Handle logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                window.location.replace('../index.html');
+            });
+        });
+    </script>
+</body>
+</html>

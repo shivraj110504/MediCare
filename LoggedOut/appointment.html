@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - MediCare</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../futuristic-theme.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .appointment-section {
+            min-height: 100vh;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .appointment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .appointment-card {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .appointment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .appointment-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .appointment-subtitle {
+            color: rgba(var(--text-rgb), 0.7);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(var(--text-rgb), 0.9);
+            font-weight: 500;
+        }
+
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 1rem;
+            color: rgba(var(--primary-rgb), 0.7);
+            width: 20px;
+            height: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .input-with-icon input,
+        .input-with-icon select {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(var(--primary-rgb), 0.3);
+            border-radius: 0.5rem;
+            color: rgba(var(--text-rgb), 0.9);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-with-icon input:focus,
+        .input-with-icon select:focus {
+            outline: none;
+            border-color: rgba(var(--primary-rgb), 0.8);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .input-with-icon input:focus + i,
+        .input-with-icon select:focus + i {
+            color: rgb(var(--primary-rgb));
+        }
+
+        .input-with-icon select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            padding-right: 3rem;
+        }
+
+        .input-with-icon input[type="date"] {
+            padding-right: 1rem;
+        }
+
+        .input-with-icon input::placeholder {
+            color: rgba(var(--text-rgb), 0.5);
+        }
+
+        .btn-block {
+            width: 100%;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-block i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            background: radial-gradient(circle at center, rgba(var(--primary-rgb), 0.3), transparent 70%);
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.2), transparent 70%);
+            width: 300px;
+            height: 300px;
+            bottom: 10%;
+            left: -50px;
+        }
+
+        @media (max-width: 768px) {
+            .appointment-container {
+                padding: 0 1rem;
+            }
+
+            .appointment-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Navbar Styles */
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 2rem;
+        }
+
+        .user-profile {
+            margin-left: auto;
+        }
+
+        .user-dropdown {
+            position: relative;
+            z-index: 100;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(var(--primary-rgb), 0.1);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            min-width: 240px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: rgb(var(--primary-rgb));
+            transform: translateX(2px);
+        }
+
+        .dropdown-item i {
+            flex-shrink: 0;
+        }
+
+        .dropdown-header {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .text-danger {
+            color: #ff4444 !important;
+        }
+
+        .text-danger:hover {
+            background: rgba(255, 68, 68, 0.15) !important;
+            color: #ff6666 !important;
+            transform: translateX(2px);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 0;
+        }
+
+        .icon-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-profile {
+                margin-left: 0;
+            }
+            .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        }
+    </style>
+</head>
+<body class="cyber-theme">
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Header -->
+    <header class="cyber-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-text neon-text">MediCare</div>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="ai-doctor.html" class="nav-link">AI Doctor</a>
+                <a href="appointment.html" class="nav-link active">Appointments</a>
+                <a href="hospital-beds.html" class="nav-link">Hospital Beds</a>
+                <a href="training.html" class="nav-link">Training</a>
+                <a href="medicine.html" class="nav-link">Medicine</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+
+            <!-- User Profile on Right -->
+            <!-- <div class="user-profile">
+                <div class="user-dropdown">
+                    <button class="dropdown-toggle">
+                        <i data-lucide="user-circle" class="icon-sm"></i>
+                        <span id="userNameDisplay">Guest</span>
+                        <i data-lucide="chevron-down" class="icon-sm"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <i data-lucide="user" class="icon-sm"></i>
+                                <div>
+                                    <div id="userFullName" class="user-name">User Name</div>
+                                    <div id="userEmail" class="user-email">user@example.com</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="user" class="icon-sm"></i>
+                            Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i data-lucide="settings" class="icon-sm"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutBtn" class="dropdown-item text-danger">
+                            <i data-lucide="log-out" class="icon-sm"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="nav-right">
+                <div class="auth-buttons" data-auth-hide="false">
+                    <a href="../login.html" class="btn btn-outline btn-glow">Login</a>
+                    <a href="../signup.html" class="btn btn-primary btn-glow">Sign Up</a>
+                </div>
+                
+                <!-- <div class="user-profile" data-auth-show="false">
+                    <div class="user-info">
+                        <i data-lucide="user"></i>
+                        <span class="user-name">User</span>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" id="logoutBtn" class="dropdown-item">
+                            <i data-lucide="log-out"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Appointment Section -->
+    <section class="appointment-section">
+        <div class="appointment-container">
+            <div class="appointment-card">
+                <div class="appointment-header">
+                    <h1 class="appointment-title">Book an Appointment</h1>
+                    <p class="appointment-subtitle">Schedule a consultation with our expert doctors</p>
+                </div>
+                
+                <form id="appointmentForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <div class="input-with-icon">
+                            <input type="text" id="name" placeholder="Enter your full name" required>
+                            <i data-lucide="user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-with-icon">
+                            <input type="email" id="email" placeholder="Enter your email" required>
+                            <i data-lucide="mail"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact">Phone Number</label>
+                        <div class="input-with-icon">
+                            <input type="tel" id="contact" placeholder="Enter your phone number" required>
+                            <i data-lucide="phone"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor">Select Doctor</label>
+                        <div class="input-with-icon">
+                            <select id="doctor" required>
+                                <option value="">Choose a doctor</option>
+                                <option value="dr-smith">Dr. Smith - Cardiologist</option>
+                                <option value="dr-patel">Dr. Patel - Neurologist</option>
+                                <option value="dr-jones">Dr. Jones - Pediatrician</option>
+                                <option value="dr-wilson">Dr. Wilson - Orthopedic</option>
+                                <option value="dr-garcia">Dr. Garcia - Dermatologist</option>
+                            </select>
+                            <i data-lucide="stethoscope"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Appointment Date</label>
+                        <div class="input-with-icon">
+                            <input type="date" id="date" required>
+                            <i data-lucide="calendar"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="time">Preferred Time</label>
+                        <div class="input-with-icon">
+                            <select id="time" required>
+                                <option value="">Select a time slot</option>
+                                <option value="09:00">09:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="14:00">02:00 PM</option>
+                                <option value="15:00">03:00 PM</option>
+                                <option value="16:00">04:00 PM</option>
+                                <option value="17:00">05:00 PM</option>
+                            </select>
+                            <i data-lucide="clock"></i>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-glow btn-block">
+                        <i data-lucide="calendar-plus"></i>
+                        Book Appointment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check login status
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                window.location.replace('login.html');
+                return;
+            }
+
+            // Update user information in dropdown
+            const userName = localStorage.getItem('userName') || 'User';
+            const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+            
+            document.getElementById('userNameDisplay').textContent = userName;
+            document.getElementById('userFullName').textContent = userName;
+            document.getElementById('userEmail').textContent = userEmail;
+
+            // Handle dropdown toggle
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            
+            // Toggle dropdown on click
+            dropdownToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownToggle.classList.toggle('active');
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownToggle.classList.remove('active');
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            dropdownMenu.addEventListener('click', (e) => {
+                if (!e.target.closest('#logoutBtn')) {
+                    e.stopPropagation();
+                }
+            });
+
+            // Handle logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Show loading state
+                const loader = document.createElement('div');
+                loader.className = 'page-loader';
+                loader.innerHTML = '<span class="loader"></span>';
+                document.body.appendChild(loader);
+                
+                // Clear user data
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                
+                // Redirect with slight delay for smooth transition
+                setTimeout(() => {
+                    window.location.replace('../index.html');
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
