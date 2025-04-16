@@ -57,61 +57,6 @@
             margin: 0.75rem 0 2rem;
         }
 
-        .social-signup {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
-            background: rgba(20, 20, 35, 0.5);
-            color: #ffffff;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .social-btn:hover {
-            background: rgba(30, 30, 50, 0.8);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .social-btn img {
-            width: 20px;
-            height: 20px;
-            opacity: 0.9;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 2rem 0;
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .divider span {
-            padding: 0 1rem;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -150,11 +95,21 @@
             outline: none;
             border-color: rgba(0, 229, 255, 0.5);
             box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.1);
-            background: rgba(0, 0, 0, 0.5);
         }
 
         .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .error-message {
+            display: none;
+            color: #ff4d4d;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .error-message.show {
+            display: block;
         }
 
         .terms-checkbox {
@@ -175,15 +130,9 @@
             cursor: pointer;
         }
 
-        .terms-checkbox input[type="checkbox"]:checked {
-            background: rgba(0, 229, 255, 0.9);
-            border-color: transparent;
-        }
-
         .terms-checkbox a {
             color: #00e5ff;
             text-decoration: none;
-            font-weight: 500;
         }
 
         .terms-checkbox a:hover {
@@ -192,16 +141,15 @@
 
         .create-account-btn {
             width: 100%;
-            padding: 0.9rem;
+            padding: 1rem;
             background: linear-gradient(135deg, #00e5ff, #00b8d4);
-            color: #fff;
             border: none;
             border-radius: 0.75rem;
+            color: #ffffff;
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 1.5rem;
         }
 
         .create-account-btn:hover {
@@ -226,21 +174,94 @@
         }
 
         @media (max-width: 640px) {
-            .signup-container {
-                padding-top: 100px;
-                padding: 1.5rem;
-            }
-
             .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .social-signup {
                 grid-template-columns: 1fr;
             }
 
             .signup-form {
                 padding: 2rem 1.5rem;
+            }
+        }
+
+        /* Toast Container Styles */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            background: rgba(13, 12, 23, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .toast.error {
+            border-left: 4px solid #f44336;
+        }
+
+        .toast.info {
+            border-left: 4px solid #2196F3;
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #ffffff;
+        }
+
+        .toast i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .toast.success i {
+            color: #4CAF50;
+        }
+
+        .toast.error i {
+            color: #f44336;
+        }
+
+        .toast.info i {
+            color: #2196F3;
+        }
+
+        .toast.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
             }
         }
     </style>
@@ -256,30 +277,14 @@
                 <p class="brand-subtitle">Join MediCare for personalized healthcare</p>
             </div>
 
-            <div class="social-signup">
-                <button type="button" class="social-btn">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
-                    Google
-                </button>
-                <button type="button" class="social-btn">
-                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" alt="Facebook">
-                    Facebook
-                </button>
-            </div>
-
-            <div class="divider">
-                <span>or sign up with email</span>
-            </div>
-
             <div class="form-grid">
                 <div class="form-group">
                     <i data-lucide="user" class="icon"></i>
                     <input type="text" class="form-input" id="firstName" placeholder="First Name" required>
                     <div class="error-message" id="firstNameError"></div>
                 </div>
-
                 <div class="form-group">
-                    <!-- <i data-lucide="user" class="icon"></i> -->
+                    <i data-lucide="user" class="icon"></i>
                     <input type="text" class="form-input" id="lastName" placeholder="Last Name" required>
                     <div class="error-message" id="lastNameError"></div>
                 </div>
@@ -322,23 +327,19 @@
         </form>
     </div>
 
+    <div id="toast-container"></div>
+
     <!-- Footer -->
     <div id="footer-placeholder"></div>
-
     <script src="common.js"></script>
+    <script src="signup.js"></script>
     <script>
         // Load navbar and footer
         fetch('components/navbar-footer.html')
             .then(response => response.text())
             .then(data => {
-                const navbarPlaceholder = document.getElementById('navbar-placeholder');
-                const navbarContent = data.split('<!-- Footer -->')[0];
-                navbarPlaceholder.innerHTML = navbarContent;
-
-                const footerPlaceholder = document.getElementById('footer-placeholder');
-                const footerContent = data.split('<!-- Footer -->')[1];
-                footerPlaceholder.innerHTML = footerContent;
-
+                document.getElementById('navbar-placeholder').innerHTML = data.split('<!-- Footer -->')[0];
+                document.getElementById('footer-placeholder').innerHTML = data.split('<!-- Footer -->')[1];
                 lucide.createIcons();
 
                 // Redirect if already logged in
@@ -346,87 +347,6 @@
                     window.location.replace('loggedin.html');
                 }
             });
-
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Reset error messages
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.textContent = '';
-                el.classList.remove('show');
-            });
-            
-            // Get form data
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const terms = document.getElementById('terms').checked;
-            
-            // Validate form data
-            let hasError = false;
-            
-            if (!firstName || firstName.length < 2) {
-                document.getElementById('firstNameError').textContent = 'First name must be at least 2 characters';
-                document.getElementById('firstNameError').classList.add('show');
-                hasError = true;
-            }
-            
-            if (!lastName || lastName.length < 2) {
-                document.getElementById('lastNameError').textContent = 'Last name must be at least 2 characters';
-                document.getElementById('lastNameError').classList.add('show');
-                hasError = true;
-            }
-            
-            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                document.getElementById('emailError').textContent = 'Please enter a valid email address';
-                document.getElementById('emailError').classList.add('show');
-                hasError = true;
-            }
-            
-            if (!phone || !phone.match(/^\d{10}$/)) {
-                document.getElementById('phoneError').textContent = 'Please enter a valid 10-digit phone number';
-                document.getElementById('phoneError').classList.add('show');
-                hasError = true;
-            }
-            
-            if (!password || password.length < 6) {
-                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
-                document.getElementById('passwordError').classList.add('show');
-                hasError = true;
-            }
-            
-            if (password !== confirmPassword) {
-                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
-                document.getElementById('confirmPasswordError').classList.add('show');
-                hasError = true;
-            }
-            
-            if (!terms) {
-                alert('Please accept the Terms of Service and Privacy Policy');
-                hasError = true;
-            }
-            
-            if (hasError) return;
-
-            try {
-                // Store user data (in production, this would be an API call)
-                const fullName = `${firstName} ${lastName}`;
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userName', fullName);
-                localStorage.setItem('userPhone', phone);
-                
-                // Redirect to loggedin page
-                window.location.replace('loggedin.html');
-            } catch (error) {
-                console.error('Signup failed:', error);
-                document.getElementById('emailError').textContent = 'Failed to create account. Please try again.';
-                document.getElementById('emailError').classList.add('show');
-            }
-        });
     </script>
 </body>
 </html>

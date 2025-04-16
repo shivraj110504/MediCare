@@ -12,26 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const userDataStr = localStorage.getItem('medicare-user');
     console.log('LocalStorage on load:', {
         isLoggedIn: localStorage.getItem('isLoggedIn'),
-        userData: userDataStr
+        userData: userDataStr ? JSON.parse(userDataStr) : null
     });
-
-    if (userDataStr) {
-        try {
-            const userData = JSON.parse(userDataStr);
-            console.log('User data parsed:', userData);
-            
-            // Directly try to update username
-            const userNameElement = document.getElementById('displayUsername');
-            if (userNameElement) {
-                userNameElement.textContent = userData.fullName || userData.email.split('@')[0];
-                console.log('Updated username directly');
-            } else {
-                console.log('Username element not found');
-            }
-        } catch (error) {
-            console.error('Error parsing user data:', error);
-        }
-    }
 
     // Check login status and update UI
     checkLoginStatus();
@@ -49,48 +31,51 @@ function checkLoginStatus() {
     const authButtons = document.querySelector('.auth-buttons');
     const userProfile = document.querySelector('.user-profile');
     
-    console.log('Login status:', { isLoggedIn, authButtons: !!authButtons, userProfile: !!userProfile });
+    // Skip if we're on signup or login page
+    if (window.location.pathname.includes('signup.html') || 
+        window.location.pathname.includes('login.html')) {
+        return;
+    }
     
-    if (!authButtons || !userProfile) {
-        console.log('Missing required elements');
+    if (!authButtons && !userProfile) {
+        console.log('Auth elements not found - might be signup/login page');
         return;
     }
     
     if (isLoggedIn) {
         // Show user profile, hide auth buttons
-        authButtons.classList.add('hidden');
-        userProfile.classList.remove('hidden');
+        if (authButtons) authButtons.classList.add('hidden');
+        if (userProfile) userProfile.classList.remove('hidden');
         
         // Update user name
         try {
             const userDataStr = localStorage.getItem('medicare-user');
-            console.log('Raw user data:', userDataStr);
+            if (!userDataStr) {
+                console.log('No user data found');
+                return;
+            }
             
             const userData = JSON.parse(userDataStr);
-            console.log('Parsed user data:', userData);
-            
             const userNameElement = document.querySelector('#displayUsername');
-            console.log('Username element:', userNameElement);
             
             if (userData && userNameElement) {
                 const displayName = userData.fullName || userData.email.split('@')[0];
                 userNameElement.textContent = displayName;
-                console.log('Set display name to:', displayName);
-            } else {
-                console.log('Missing userData or userNameElement');
+                console.log('Updated display name:', displayName);
             }
         } catch (error) {
             console.error('Error updating username:', error);
         }
         
         // If on login/signup page, redirect to loggedin.html
-        if (window.location.pathname.includes('login.html') || window.location.pathname.includes('signup.html')) {
+        if (window.location.pathname.includes('login.html') || 
+            window.location.pathname.includes('signup.html')) {
             window.location.href = 'loggedin.html';
         }
     } else {
         // Show auth buttons, hide user profile
-        authButtons.classList.remove('hidden');
-        userProfile.classList.add('hidden');
+        if (authButtons) authButtons.classList.remove('hidden');
+        if (userProfile) userProfile.classList.add('hidden');
         
         // If on protected pages, redirect to login
         if (window.location.pathname.includes('loggedin.html')) {
@@ -104,8 +89,14 @@ function setupUserProfile() {
     const userProfileToggle = document.getElementById('userProfileToggle');
     const dropdownMenu = document.getElementById('dropdownMenu');
     
+    // Skip if we're on signup or login page
+    if (window.location.pathname.includes('signup.html') || 
+        window.location.pathname.includes('login.html')) {
+        return;
+    }
+    
     if (!userProfileToggle || !dropdownMenu) {
-        console.log('Missing dropdown elements');
+        console.log('Dropdown elements not found - might be signup/login page');
         return;
     }
     
@@ -115,11 +106,7 @@ function setupUserProfile() {
     // Toggle dropdown on user profile click
     userProfileToggle.addEventListener('click', function(e) {
         e.stopPropagation();
-        if (dropdownMenu.style.display === 'none') {
-            dropdownMenu.style.display = 'block';
-        } else {
-            dropdownMenu.style.display = 'none';
-        }
+        dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
     });
     
     // Close dropdown when clicking outside
@@ -137,12 +124,6 @@ function setupLogout() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Debug: Log data before clearing
-            console.log('Clearing user data:', {
-                isLoggedIn: localStorage.getItem('isLoggedIn'),
-                userData: localStorage.getItem('medicare-user')
-            });
             
             // Clear user data
             localStorage.removeItem('isLoggedIn');
@@ -162,7 +143,13 @@ function setupLogout() {
 // Function to show toast messages
 function showToast(message, type = 'info') {
     const toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) return;
+    if (!toastContainer) {
+        // Create toast container if it doesn't exist
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+        return showToast(message, type); // Retry now that container exists
+    }
 
     // Remove existing toasts
     const existingToasts = toastContainer.getElementsByClassName('toast');

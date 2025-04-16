@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Lucide icons
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     
-    // Set current year in footer
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-
     // Get user data from localStorage
     const userData = JSON.parse(localStorage.getItem('medicare-user'));
     if (!userData) {
@@ -13,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Pre-fill user data
-    document.getElementById('name').value = userData.fullName || '';
+    document.getElementById('name').value = userData.username || '';
     document.getElementById('email').value = userData.email || '';
     document.getElementById('contact').value = userData.phone || '';
 
@@ -28,45 +25,46 @@ document.addEventListener('DOMContentLoaded', function() {
     if (appointmentForm) {
         appointmentForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
+            // Get form data
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
-            const contact = document.getElementById('contact').value.trim();
+            const phone = document.getElementById('contact').value.trim();
+            const department = document.getElementById('department').value.trim();
             const doctor = document.getElementById('doctor').value.trim();
             const date = document.getElementById('date').value.trim();
             const time = document.getElementById('time').value.trim();
-            
-            // Validation
-            if (!name || !email || !contact || !doctor || !date || !time) {
-                showToast('Please fill in all fields', 'error');
-                return;
-            }
 
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showToast('Please enter a valid email address', 'error');
-                return;
+            // Validate
+            let hasError = false;
+            if (!name || name.length < 2) {
+                showToast('Name must be at least 2 characters', 'error'); hasError = true;
             }
-
-            // Phone validation
-            if (contact.length < 10) {
-                showToast('Please enter a valid phone number', 'error');
-                return;
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showToast('Please enter a valid email address', 'error'); hasError = true;
             }
-
-            // Date validation
-            const selectedDate = new Date(date);
-            const now = new Date();
-            if (selectedDate < now) {
-                showToast('Please select a future date', 'error');
-                return;
+            if (!phone || !phone.match(/^\d{10}$/)) {
+                showToast('Please enter a valid 10-digit phone number', 'error'); hasError = true;
             }
+            if (!department) {
+                showToast('Department is required', 'error'); hasError = true;
+            }
+            if (!doctor) {
+                showToast('Doctor is required', 'error'); hasError = true;
+            }
+            if (!date) {
+                showToast('Date is required', 'error'); hasError = true;
+            }
+            if (!time) {
+                showToast('Time is required', 'error'); hasError = true;
+            }
+            if (hasError) return;
 
             const appointmentData = {
                 name,
                 email,
-                contact,
+                phone,
+                department,
                 doctor,
                 date,
                 time
@@ -74,27 +72,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 showToast('Booking your appointment...', 'info');
-                
-                const response = await fetch('http://localhost:5000/book-appointment', {
+                const response = await fetch('/api/appointments', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(appointmentData)
                 });
-
                 const result = await response.json();
 
-                if (response.ok) {
-                    showToast(result.message || 'Appointment booked successfully!', 'success');
-                    // Reset the form
+                if (response.ok && result.success) {
+                    showToast('Appointment booked!', 'success');
                     appointmentForm.reset();
                 } else {
                     showToast(result.message || 'Failed to book appointment', 'error');
                 }
             } catch (error) {
-                console.error('Appointment Booking Error:', error);
                 showToast('An error occurred. Please try again.', 'error');
             }
         });

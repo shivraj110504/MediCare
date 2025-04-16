@@ -184,7 +184,7 @@
                             <i data-lucide="user"></i>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <div class="input-with-icon">
@@ -192,43 +192,62 @@
                             <i data-lucide="mail"></i>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="contact">Phone Number</label>
+                        <label for="phone">Phone Number</label>
                         <div class="input-with-icon">
-                            <input type="tel" id="contact" placeholder="Enter your phone number" required>
+                            <input type="tel" id="phone" placeholder="Enter your phone number" required>
                             <i data-lucide="phone"></i>
                         </div>
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <div class="input-with-icon">
+                            <select id="department" required>
+                                <option value="">Select department</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Oncology">Oncology</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="General Medicine">General Medicine</option>
+                            </select>
+                            <i data-lucide="building-2"></i>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="doctor">Select Doctor</label>
                         <div class="input-with-icon">
                             <select id="doctor" required>
-                                <option value="">Choose a doctor</option>
-                                <option value="dr-smith">Dr. Smith - Cardiologist</option>
-                                <option value="dr-patel">Dr. Patel - Neurologist</option>
-                                <option value="dr-jones">Dr. Jones - Pediatrician</option>
-                                <option value="dr-wilson">Dr. Wilson - Orthopedic</option>
-                                <option value="dr-garcia">Dr. Garcia - Dermatologist</option>
+                                <option value="">Select doctor</option>
+                                <option value="Dr. John Smith">Dr. John Smith - Cardiology</option>
+                                <option value="Dr. Sarah Johnson">Dr. Sarah Johnson - Neurology</option>
+                                <option value="Dr. Michael Brown">Dr. Michael Brown - Orthopedics</option>
+                                <option value="Dr. Emily Davis">Dr. Emily Davis - Pediatrics</option>
+                                <option value="Dr. Robert Wilson">Dr. Robert Wilson - Oncology</option>
+                                <option value="Dr. Lisa Anderson">Dr. Lisa Anderson - Dermatology</option>
+                                <option value="Dr. James Taylor">Dr. James Taylor - General Medicine</option>
                             </select>
                             <i data-lucide="stethoscope"></i>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="date">Appointment Date</label>
+                        <label for="date">Preferred Date</label>
                         <div class="input-with-icon">
                             <input type="date" id="date" required>
                             <i data-lucide="calendar"></i>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="time">Preferred Time</label>
                         <div class="input-with-icon">
                             <select id="time" required>
-                                <option value="">Select a time slot</option>
+                                <option value="">Select time slot</option>
                                 <option value="09:00">09:00 AM</option>
                                 <option value="10:00">10:00 AM</option>
                                 <option value="11:00">11:00 AM</option>

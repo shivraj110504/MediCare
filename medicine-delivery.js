@@ -2,9 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Lucide icons
     lucide.createIcons();
     
-    // Set current year in footer
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-    
     // Check if user is logged in and update the UI accordingly
     checkLoginStatus();
     
@@ -99,10 +96,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    if (orderForm) {
-        orderForm.addEventListener('submit', async function(e) {
+    const medicineOrderForm = document.getElementById('medicineOrderForm');
+    if (medicineOrderForm) {
+        medicineOrderForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            await placeOrder();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const deliveryTime = document.getElementById('deliveryTime').value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            let hasError = false;
+            if (!name) { showToast('Name is required', 'error'); hasError = true; }
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showToast('Valid email required', 'error'); hasError = true; }
+            if (!phone || !phone.match(/^\d{10}$/)) { showToast('Valid 10-digit phone required', 'error'); hasError = true; }
+            if (!address) { showToast('Address required', 'error'); hasError = true; }
+            if (!deliveryTime) { showToast('Delivery time required', 'error'); hasError = true; }
+            if (!paymentMethod) { showToast('Payment method required', 'error'); hasError = true; }
+            if (hasError) return;
+            const data = { name, email, phone, address, deliveryTime, paymentMethod, notes };
+            try {
+                showToast('Submitting order...', 'info');
+                const res = await fetch('/api/medicine-orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    showToast('Medicine request submitted!', 'success');
+                    medicineOrderForm.reset();
+                } else {
+                    showToast(result.message || 'Order failed', 'error');
+                }
+            } catch (err) {
+                showToast('Server error. Try again.', 'error');
+            }
         });
     }
     
@@ -116,99 +146,28 @@ document.addEventListener('DOMContentLoaded', function() {
         displayMedicines(filteredMedicines);
     }
 
-    async function placeOrder() {
-        if (cart.length === 0) {
-            showToast('Your cart is empty', 'error');
-            return;
-        }
-
-        const orderForm = document.getElementById('orderForm');
-        
-        // Form validation
-        if (!orderForm.checkValidity()) {
-            orderForm.reportValidity();
-            return;
-        }
-
-        // Get form data
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const phone = document.getElementById('phone').value;
-        const address = document.getElementById('address').value;
-        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-
-        // Prepare order data
-        const orderData = {
-            name: name,
-            email: email,
-            phone: phone,
-            medicines: cart.map(item => ({
-                name: item.name,
-                quantity: item.quantity
-            })),
-            address: address,
-            paymentMethod: paymentMethod
-        };
-
-        try {
-            showToast('Placing your order...', 'info');
-            
-            console.log('Order data being sent:', JSON.stringify(orderData));
-            
-            const response = await fetch('http://localhost:5000/order-medicine', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderData)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                showToast('Order placed successfully! A confirmation email has been sent to your email address.', 'success');
-                // Clear cart and form
-                cart = [];
-                localStorage.setItem('cart', JSON.stringify(cart));
-                orderForm.reset();
-                updateCartUI();
-                
-                // Hide order form and show success message
-                document.getElementById('cartContent').classList.add('hidden');
-                document.getElementById('emptyCart').classList.remove('hidden');
-            } else {
-                console.error('Order Error:', result);
-                showToast(result.message || 'Failed to place order', 'error');
-            }
-        } catch (error) {
-            console.error('Order Error:', error);
-            showToast('An error occurred. Please try again.', 'error');
-        }
-    }
-
     function displayMedicines(medicinesToDisplay) {
         medicinesList.innerHTML = '';
+        
         medicinesToDisplay.forEach(medicine => {
-            const card = document.createElement('div');
-            card.className = 'medicine-card';
-            card.innerHTML = `
+            const medicineCard = document.createElement('div');
+            medicineCard.className = 'medicine-card';
+            medicineCard.innerHTML = `
                 <h3>${medicine.name}</h3>
                 <p class="generic-name">${medicine.genericName}</p>
                 <p class="price">₹${medicine.price}</p>
-                <p class="stock ${medicine.stock === 'Low Stock' ? 'low-stock' : ''}">${medicine.stock}</p>
+                <p class="stock ${medicine.stock === 'In Stock' ? 'in-stock' : 'low-stock'}">${medicine.stock}</p>
                 ${medicine.prescriptionRequired ? '<p class="prescription-required">Prescription Required</p>' : ''}
-                <button class="btn btn-primary btn-sm add-to-cart" onclick="addToCart(${JSON.stringify(medicine).replace(/"/g, '&quot;')})">
-                    <i data-lucide="shopping-cart"></i>
+                <button class="btn btn-primary" onclick="addToCart(${JSON.stringify(medicine)})">
                     Add to Cart
                 </button>
             `;
-            medicinesList.appendChild(card);
+            medicinesList.appendChild(medicineCard);
         });
-        lucide.createIcons();
     }
 
     // Make addToCart and removeFromCart available globally
-    function addToCart(medicine) {
+    window.addToCart = function(medicine) {
         const existingItem = cart.find(item => item.id === medicine.id);
         
         if (existingItem) {
@@ -225,28 +184,27 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartUI();
         showToast('Added to cart', 'success');
-    }
+    };
 
-    function removeFromCart(medicineId) {
+    window.removeFromCart = function(medicineId) {
         cart = cart.filter(item => item.id !== medicineId);
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartUI();
-        showToast('Removed from cart', 'info');
-    }
+    };
 
-    function updateQuantity(medicineId, newQuantity) {
-        if (newQuantity < 1) {
-            removeFromCart(medicineId);
-            return;
-        }
-
+    window.updateQuantity = function(medicineId, newQuantity) {
         const item = cart.find(item => item.id === medicineId);
+        
         if (item) {
-            item.quantity = newQuantity;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartUI();
+            if (newQuantity < 1) {
+                removeFromCart(medicineId);
+            } else {
+                item.quantity = parseInt(newQuantity);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartUI();
+            }
         }
-    }
+    };
 
     function updateCartUI() {
         if (cart.length === 0) {
@@ -254,32 +212,28 @@ document.addEventListener('DOMContentLoaded', function() {
             cartContent.classList.add('hidden');
             return;
         }
-
+        
         emptyCart.classList.add('hidden');
         cartContent.classList.remove('hidden');
+        
+        // Update cart items
         cartItems.innerHTML = '';
-
+        
         cart.forEach(item => {
             const cartItem = document.createElement('div');
             cartItem.className = 'cart-item';
             cartItem.innerHTML = `
-                <div class="cart-item-info">
+                <div class="item-info">
                     <h4>${item.name}</h4>
-                    <div class="cart-item-details">
-                        <p class="cart-item-price">₹${item.price}</p>
-                        <div class="quantity-control">
-                            <button class="btn btn-icon" onclick="updateQuantity('${item.id}', ${item.quantity - 1})">
-                                <i data-lucide="minus"></i>
-                            </button>
-                            <span>${item.quantity}</span>
-                            <button class="btn btn-icon" onclick="updateQuantity('${item.id}', ${item.quantity + 1})">
-                                <i data-lucide="plus"></i>
-                            </button>
-                        </div>
-                    </div>
+                    <p>₹${item.price}</p>
                 </div>
-                <div class="cart-item-total">
-                    <p>₹${item.price * item.quantity}</p>
+                <div class="item-actions">
+                    <div class="quantity-controls">
+                        <button onclick="updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                        <input type="number" value="${item.quantity}" min="1" 
+                            onchange="updateQuantity('${item.id}', this.value)">
+                        <button onclick="updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                    </div>
                     <button class="btn btn-icon btn-danger" onclick="removeFromCart('${item.id}')">
                         <i data-lucide="trash-2"></i>
                     </button>
@@ -303,11 +257,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function calculateSubtotal() {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     }
-
-    // Make functions globally available
-    window.addToCart = addToCart;
-    window.removeFromCart = removeFromCart;
-    window.updateQuantity = updateQuantity;
 });
 
 // Check if user is logged in
@@ -326,16 +275,23 @@ function checkLoginStatus() {
         const userNameElement = document.querySelector('.user-name');
         
         if (userData && userNameElement) {
-            if (userData.name) {
-                userNameElement.textContent = userData.name;
-            } else if (userData.email) {
-                userNameElement.textContent = userData.email.split('@')[0];
-            }
+            userNameElement.textContent = userData.username || userData.email.split('@')[0];
+        }
+
+        // Pre-fill user data in order form
+        const orderForm = document.getElementById('orderForm');
+        if (orderForm) {
+            document.getElementById('name').value = userData.username || '';
+            document.getElementById('email').value = userData.email || '';
+            document.getElementById('phone').value = userData.phone || '';
         }
     } else {
         // User is not logged in
         authButtons.classList.remove('hidden');
         userProfile.classList.add('hidden');
+        
+        // Redirect to login page
+        window.location.href = 'login.html';
     }
 }
 
@@ -350,6 +306,7 @@ function setupLogout() {
             // Clear login data
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('medicare-user');
+            localStorage.removeItem('cart');
             
             // Show toast message
             showToast('Logged out successfully', 'success');
@@ -387,19 +344,44 @@ function setupDropdownToggle() {
 
 // Show Toast Messages
 function showToast(message, type = 'success') {
-    const existingToast = document.querySelector('.toast');
-    if (existingToast) {
-        existingToast.remove();
-    }
-
+    const toastContainer = document.getElementById('toast-container');
+    
+    if (!toastContainer) return;
+    
+    // Remove existing toasts
+    const existingToasts = toastContainer.getElementsByClassName('toast');
+    Array.from(existingToasts).forEach(toast => toast.remove());
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.textContent = message;
-
-    document.body.appendChild(toast);
-
-    // Auto-remove after 3s
+    
+    // Add icon based on type
+    let icon = '';
+    switch(type) {
+        case 'success':
+            icon = '<i data-lucide="check-circle"></i>';
+            break;
+        case 'error':
+            icon = '<i data-lucide="x-circle"></i>';
+            break;
+        case 'info':
+            icon = '<i data-lucide="info"></i>';
+            break;
+    }
+    
+    toast.innerHTML = `
+        <div class="toast-content">
+            ${icon}
+            <span>${message}</span>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    lucide.createIcons();
+    
+    // Auto remove after 3 seconds
     setTimeout(() => {
-        toast.remove();
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
     }, 3000);
 }

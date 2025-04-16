@@ -341,86 +341,92 @@
                                 </div>
                             </div>
                             
-                            <form id="orderForm">
-                                <div class="mt-6 space-y-4">
+                            <div id="orderForm" class="glass-panel p-6 fade-in">
+                                <h3 class="text-xl font-semibold mb-4">Delivery Details</h3>
+                                <form id="medicineOrderForm">
                                     <div class="form-group">
-                                        <label class="form-label" style="color: aliceblue;">Full Name</label>
+                                        <label for="name">Full Name</label>
                                         <div class="input-with-icon">
+                                            <input type="text" id="name" placeholder="Enter your full name" required>
                                             <i data-lucide="user"></i>
-                                            <input
-                                                type="text"
-                                                id="name"
-                                                name="name"
-                                                required
-                                                placeholder="Enter your full name"
-                                                class="form-input"
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" style="color: aliceblue;">Email Address</label>
-                                        <div class="input-with-icon">
-                                            <i data-lucide="mail"></i>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                required
-                                                placeholder="Enter your email"
-                                                class="form-input"
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" style="color: aliceblue;">Phone Number</label>
-                                        <div class="input-with-icon">
-                                            <i data-lucide="phone"></i>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                required
-                                                placeholder="Enter your phone number"
-                                                class="form-input"
-                                            />
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="form-label" style="color: aliceblue;">Delivery Address</label>
+                                        <label for="email">Email Address</label>
                                         <div class="input-with-icon">
-                                            <i data-lucide="map-pin"></i>
-                                            <textarea
-                                                id="address"
-                                                name="address"
-                                                required
-                                                placeholder="Enter your complete delivery address"
-                                                class="form-input min-h-[100px] !pl-10 resize-none"
-                                                rows="3"
-                                            ></textarea>
+                                            <input type="email" id="email" placeholder="Enter your email" required>
+                                            <i data-lucide="mail"></i>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-group">
-                                        <label class="form-label">Upload Prescription (if required)</label>
-                                        <div class="prescription-upload">
-                                            <span id="fileNameDisplay">No file chosen</span>
-                                            <button type="button" class="btn btn-outline" id="uploadBtn">
-                                                <i data-lucide="upload" class="icon-sm mr-1"></i>
-                                                Choose File
-                                            </button>
-                                            <input type="file" id="prescriptionUpload" class="hidden" accept="image/*,.pdf" />
+                                        <label for="phone">Phone Number</label>
+                                        <div class="input-with-icon">
+                                            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                                            <i data-lucide="phone"></i>
                                         </div>
                                     </div>
-                                    
-                                    <button type="submit" class="btn btn-primary w-full" id="placeOrderBtn">
-                                        <i data-lucide="check" class="icon-sm mr-2"></i>
+
+                                    <div class="form-group">
+                                        <label for="address">Delivery Address</label>
+                                        <div class="input-with-icon">
+                                            <textarea id="address" rows="3" placeholder="Enter your complete delivery address" required></textarea>
+                                            <i data-lucide="map-pin"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="prescriptionFile">Upload Prescription (if required)</label>
+                                        <div class="input-with-icon">
+                                            <input type="file" id="prescriptionFile" accept=".jpg,.jpeg,.png,.pdf">
+                                            <i data-lucide="file-text"></i>
+                                        </div>
+                                        <small class="text-gray-400">Accepted formats: JPG, PNG, PDF (Max size: 5MB)</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="deliveryTime">Preferred Delivery Time</label>
+                                        <div class="input-with-icon">
+                                            <select id="deliveryTime" required>
+                                                <option value="">Select delivery time</option>
+                                                <option value="morning">Morning (9 AM - 12 PM)</option>
+                                                <option value="afternoon">Afternoon (12 PM - 3 PM)</option>
+                                                <option value="evening">Evening (3 PM - 6 PM)</option>
+                                                <option value="night">Night (6 PM - 9 PM)</option>
+                                            </select>
+                                            <i data-lucide="clock"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="paymentMethod">Payment Method</label>
+                                        <div class="input-with-icon">
+                                            <select id="paymentMethod" required>
+                                                <option value="">Select payment method</option>
+                                                <option value="cod">Cash on Delivery</option>
+                                                <option value="card">Credit/Debit Card</option>
+                                                <option value="upi">UPI</option>
+                                                <option value="netbanking">Net Banking</option>
+                                            </select>
+                                            <i data-lucide="credit-card"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="notes">Additional Notes</label>
+                                        <div class="input-with-icon">
+                                            <textarea id="notes" rows="2" placeholder="Any special instructions for delivery"></textarea>
+                                            <i data-lucide="file-text"></i>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-glow btn-block">
+                                        <i data-lucide="shopping-cart"></i>
                                         Place Order
                                     </button>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>

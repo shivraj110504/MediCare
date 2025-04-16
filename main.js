@@ -1,11 +1,13 @@
-
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Lucide icons
     lucide.createIcons();
     
-    // Set current year in footer
-    document.getElementById('current-year').textContent = new Date().getFullYear();
+    // Set current year in footer if element exists
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
     
     // Initialize header scroll effect
     initHeaderScroll();

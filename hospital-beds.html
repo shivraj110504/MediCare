@@ -760,43 +760,89 @@
                     <i data-lucide="x" class="icon-md"></i>
                 </button>
                 <h2 class="text-2xl font-semibold mb-4">Book a Hospital Bed</h2>
-                <form id="bookingForm" onsubmit="handleBooking(event)">
+                <form id="hospitalBedForm">
                     <div class="form-group">
-                        <label class="form-label">Patient Name</label>
-                        <input type="text" class="form-input" required>
+                        <label for="name">Full Name</label>
+                        <div class="input-with-icon">
+                            <input type="text" id="name" placeholder="Enter your full name" required>
+                            <i data-lucide="user"></i>
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label">Contact Number</label>
-                        <input type="tel" class="form-input" required>
+                        <label for="email">Email Address</label>
+                        <div class="input-with-icon">
+                            <input type="email" id="email" placeholder="Enter your email" required>
+                            <i data-lucide="mail"></i>
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label">Hospital</label>
-                        <select class="form-input" required>
-                            <option value="">Select Hospital</option>
-                            <option value="city">City Hospital</option>
-                            <option value="metro">Metro Medical Center</option>
-                            <option value="apollo">Apollo Hospital</option>
-                            <option value="fortis">Fortis Healthcare</option>
-                        </select>
+                        <label for="phone">Phone Number</label>
+                        <div class="input-with-icon">
+                            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                            <i data-lucide="phone"></i>
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label">Bed Type</label>
-                        <select class="form-input" required>
-                            <option value="">Select Bed Type</option>
-                            <option value="general">General Ward</option>
-                            <option value="private">Private Room</option>
-                            <option value="icu">ICU</option>
-                        </select>
+                        <label for="hospital">Select Hospital</label>
+                        <div class="input-with-icon">
+                            <select id="hospital" required>
+                                <option value="">Select hospital</option>
+                                <option value="City General Hospital">City General Hospital</option>
+                                <option value="Memorial Medical Center">Memorial Medical Center</option>
+                                <option value="Unity Healthcare">Unity Healthcare</option>
+                                <option value="Hope Medical Institute">Hope Medical Institute</option>
+                                <option value="Grace Hospital">Grace Hospital</option>
+                            </select>
+                            <i data-lucide="building-2"></i>
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label">Check-in Date</label>
-                        <input type="date" class="form-input" required>
+                        <label for="bedType">Bed Type</label>
+                        <div class="input-with-icon">
+                            <select id="bedType" required>
+                                <option value="">Select bed type</option>
+                                <option value="General Ward">General Ward</option>
+                                <option value="Semi-Private Room">Semi-Private Room</option>
+                                <option value="Private Room">Private Room</option>
+                                <option value="ICU">Intensive Care Unit (ICU)</option>
+                                <option value="CCU">Critical Care Unit (CCU)</option>
+                            </select>
+                            <i data-lucide="bed"></i>
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label">Number of Days</label>
-                        <input type="number" min="1" class="form-input" required>
+                        <label for="admissionDate">Admission Date</label>
+                        <div class="input-with-icon">
+                            <input type="date" id="admissionDate" required>
+                            <i data-lucide="calendar"></i>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-full">Book Now</button>
+
+                    <div class="form-group">
+                        <label for="duration">Duration (Days)</label>
+                        <div class="input-with-icon">
+                            <input type="number" id="duration" min="1" max="30" placeholder="Enter number of days" required>
+                            <i data-lucide="clock"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medicalCondition">Medical Condition</label>
+                        <div class="input-with-icon">
+                            <textarea id="medicalCondition" rows="3" placeholder="Briefly describe the medical condition" required></textarea>
+                            <i data-lucide="stethoscope"></i>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-glow btn-block">
+                        <i data-lucide="bed"></i>
+                        Book Hospital Bed
+                    </button>
                 </form>
             </div>
         </div>

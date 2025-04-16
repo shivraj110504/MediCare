@@ -2,9 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Lucide icons
     lucide.createIcons();
     
-    // Set current year in footer
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-    
     // Check if user is logged in and update the UI accordingly
     checkLoginStatus();
     
@@ -95,9 +92,9 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.classList.add('active');
         
         // Pre-fill user data
-        document.getElementById('patientName').value = userData.fullName || '';
+        document.getElementById('patientName').value = userData.username || '';
         document.getElementById('patientEmail').value = userData.email || '';
-        document.getElementById('patientContact').value = userData.phone || '';
+        document.getElementById('patientPhone').value = userData.phone || '';
         
         // Set the hospital in the dropdown
         const hospitalSelect = document.getElementById('hospitalName');
@@ -112,276 +109,201 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Trigger change event to update ward types
-            const event = new Event('change');
-            hospitalSelect.dispatchEvent(event);
+            // Update room types based on selected hospital
+            updateRoomTypes(hospitalId);
         }
-        
-        // Set minimum date to today for admission date
-        const dateInput = document.getElementById('admissionDate');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.min = today;
-        dateInput.value = today;
     };
 
     // View hospital details
     window.viewHospitalDetails = function(hospitalId) {
         const hospital = hospitals[hospitalId];
-        if (!hospital) return;
-
-        // Create modal content
+        
+        if (!hospital) {
+            showToast('Hospital information not found', 'error');
+            return;
+        }
+        
         const modalContent = `
             <div class="hospital-details">
                 <h2>${hospital.name}</h2>
-                <p class="location"><i data-lucide="map-pin"></i> ${hospital.location}</p>
-                <p class="contact"><i data-lucide="phone"></i> ${hospital.contact}</p>
                 <div class="rating">
-                    <i data-lucide="star"></i>
-                    <span>${hospital.rating} / 5.0</span>
+                    Rating: ${hospital.rating} 
+                </div>
+                <div class="location">
+                    <i data-lucide="map-pin"></i> ${hospital.location}
+                </div>
+                <div class="contact">
+                    <i data-lucide="phone"></i> ${hospital.contact}
                 </div>
                 <div class="facilities">
                     <h3>Facilities</h3>
                     <ul>
-                        ${hospital.facilities.map(f => `<li><i data-lucide="check-circle"></i> ${f}</li>`).join('')}
+                        ${hospital.facilities.map(f => `<li>${f}</li>`).join('')}
                     </ul>
                 </div>
                 <div class="specialties">
                     <h3>Specialties</h3>
                     <ul>
-                        ${hospital.specialties.map(s => `<li><i data-lucide="activity"></i> ${s}</li>`).join('')}
+                        ${hospital.specialties.map(s => `<li>${s}</li>`).join('')}
                     </ul>
                 </div>
                 <div class="bed-types">
-                    <h3>Available Bed Types</h3>
-                    <div class="bed-type-buttons">
-                        ${hospital.bedTypes.map(type => `
-                            <button class="btn btn-primary btn-sm mb-2" onclick="quickBookBed('${hospitalId}')">
-                                <i data-lucide="bed"></i> Book ${type} (₹${hospital.fees[type]}/day)
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Show modal with hospital details
-        showModal(modalContent);
-    };
-
-    function setupBedBookingModal() {
-        const bookBedBtn = document.getElementById('bookBedBtn');
-        const modal = document.getElementById('bedBookingModal');
-        const closeBtn = document.getElementById('closeModal');
-        
-        if (bookBedBtn) {
-            bookBedBtn.addEventListener('click', function() {
-                // Check if user is logged in
-                const userData = JSON.parse(localStorage.getItem('medicare-user'));
-                if (!userData) {
-                    showToast('Please log in to book a bed', 'error');
-                    setTimeout(() => window.location.href = 'login.html', 1500);
-                    return;
-                }
-                
-                modal.classList.add('active');
-                
-                // Pre-fill user data
-                document.getElementById('patientName').value = userData.fullName || '';
-                document.getElementById('patientEmail').value = userData.email || '';
-                document.getElementById('patientContact').value = userData.phone || '';
-                
-                // Set minimum date to today
-                const dateInput = document.getElementById('admissionDate');
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.min = today;
-                dateInput.value = today;
-            });
-        }
-        
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                modal.classList.remove('active');
-            });
-        }
-        
-        // Close modal when clicking outside
-        window.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-            }
-        });
-    }
-    
-    function setupBedBookingForm() {
-        const form = document.getElementById('bedBookingForm');
-        const hospitalSelect = document.getElementById('hospitalName');
-        const wardTypeSelect = document.getElementById('wardType');
-        
-        // Update ward types based on selected hospital
-        if (hospitalSelect) {
-            hospitalSelect.addEventListener('change', function() {
-                const selectedHospital = this.value;
-                
-                // Find the hospital in our data
-                let hospitalData = null;
-                for (const id in hospitals) {
-                    if (hospitals[id].name === selectedHospital) {
-                        hospitalData = hospitals[id];
-                        break;
-                    }
-                }
-                
-                if (hospitalData) {
-                    // Clear existing options
-                    wardTypeSelect.innerHTML = '<option value="">Select ward type</option>';
-                    
-                    // Add new options based on hospital bed types
-                    hospitalData.bedTypes.forEach(type => {
-                        const option = document.createElement('option');
-                        option.value = type;
-                        option.textContent = `${type} (₹${hospitalData.fees[type]}/day)`;
-                        wardTypeSelect.appendChild(option);
-                    });
-                }
-            });
-        }
-        
-        // Form submission
-        if (form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                // Get form data
-                const patientName = document.getElementById('patientName').value.trim();
-                const patientEmail = document.getElementById('patientEmail').value.trim();
-                const patientContact = document.getElementById('patientContact').value.trim();
-                const hospitalName = document.getElementById('hospitalName').value.trim();
-                const wardType = document.getElementById('wardType').value.trim();
-                const admissionDate = document.getElementById('admissionDate').value.trim();
-                
-                // Validation
-                if (!patientName || !patientEmail || !patientContact || !hospitalName || !wardType || !admissionDate) {
-                    showToast('Please fill in all required fields', 'error');
-                    return;
-                }
-                
-                // Email validation
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(patientEmail)) {
-                    showToast('Please enter a valid email address', 'error');
-                    return;
-                }
-                
-                // Phone validation
-                if (patientContact.length < 10) {
-                    showToast('Please enter a valid phone number', 'error');
-                    return;
-                }
-                
-                // Get fees for the selected ward type
-                let feesPerDay = 0;
-                for (const id in hospitals) {
-                    if (hospitals[id].name === hospitalName) {
-                        // Extract the ward type without the fee information
-                        const wardTypeOnly = wardType.split(' (')[0];
-                        feesPerDay = hospitals[id].fees[wardTypeOnly];
-                        break;
-                    }
-                }
-                
-                // Create booking data
-                const bookingData = {
-                    patientName,
-                    patientEmail,
-                    patientContact,
-                    hospitalName,
-                    wardType: wardType.split(' (')[0], // Extract just the ward type without fees
-                    admissionDate,
-                    feesPerDay,
-                    status: 'pending',
-                    bookingDate: new Date().toISOString(),
-                    id: 'BED' + Math.floor(100000 + Math.random() * 900000) // Generate a random ID for demo
-                };
-                
-                try {
-                    showToast('Processing your booking...', 'info');
-                    
-                    // Try to send data to the server to store in the database
-                    try {
-                        const response = await fetch('/api/bed-bookings', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(bookingData)
-                        });
-                        
-                        if (response.ok) {
-                            const result = await response.json();
-                            // Update the ID if we got one from the server
-                            if (result.id) {
-                                bookingData.id = result.id;
-                            }
-                        }
-                    } catch (apiError) {
-                        console.log('API not available, using local storage instead');
-                        // If API fails, store in localStorage as fallback
-                        const existingBookings = JSON.parse(localStorage.getItem('bedBookings')) || [];
-                        existingBookings.push(bookingData);
-                        localStorage.setItem('bedBookings', JSON.stringify(existingBookings));
-                    }
-                    
-                    // Show success message regardless of API success
-                    showToast('Bed booked successfully!', 'success');
-                    
-                    // Close the modal
-                    document.getElementById('bedBookingModal').classList.remove('active');
-                    
-                    // Reset the form
-                    form.reset();
-                    
-                    // Show confirmation popup
-                    showConfirmationPopup(bookingData);
-                    
-                } catch (error) {
-                    console.error('Booking Error:', error);
-                    showToast('An error occurred. Please try again.', 'error');
-                }
-            });
-        }
-    }
-
-    function showConfirmationPopup(bookingData) {
-        const modalContent = `
-            <div class="booking-confirmation">
-                <div class="text-center mb-4">
-                    <i data-lucide="check-circle" class="text-success w-16 h-16 mx-auto"></i>
-                    <h2 class="text-xl font-bold mt-2">Booking Confirmed!</h2>
-                    <p class="text-gray-600">Your hospital bed has been successfully booked.</p>
-                </div>
-                
-                <div class="booking-details">
-                    <h3 class="font-semibold text-primary mb-2">Booking Details</h3>
-                    <ul class="space-y-2">
-                        <li><strong>Booking ID:</strong> ${bookingData.id || 'N/A'}</li>
-                        <li><strong>Patient:</strong> ${bookingData.patientName}</li>
-                        <li><strong>Hospital:</strong> ${bookingData.hospitalName}</li>
-                        <li><strong>Ward Type:</strong> ${bookingData.wardType}</li>
-                        <li><strong>Admission Date:</strong> ${new Date(bookingData.admissionDate).toLocaleDateString()}</li>
-                        <li><strong>Daily Fee:</strong> ₹${bookingData.feesPerDay}</li>
+                    <h3>Available Bed Types & Fees</h3>
+                    <ul>
+                        ${Object.entries(hospital.fees).map(([type, fee]) => 
+                            `<li>${type}: ₹${fee}/day</li>`).join('')}
                     </ul>
                 </div>
-                
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600 mb-4">A confirmation email has been sent to ${bookingData.patientEmail}</p>
-                    <button class="btn btn-primary" onclick="this.closest('.modal').classList.remove('active')">
-                        <i data-lucide="check"></i> Done
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="quickBookBed('${hospitalId}')">
+                        Book Now
                     </button>
                 </div>
             </div>
         `;
         
         showModal(modalContent);
+    };
+
+    function setupBedBookingModal() {
+        const modal = document.getElementById('bedBookingModal');
+        const closeBtn = modal.querySelector('.modal-close');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+        }
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+        
+        // Setup hospital selection change handler
+        const hospitalSelect = document.getElementById('hospitalName');
+        if (hospitalSelect) {
+            hospitalSelect.addEventListener('change', function() {
+                const selectedHospital = Object.keys(hospitals).find(
+                    key => hospitals[key].name === this.value
+                );
+                updateRoomTypes(selectedHospital);
+            });
+        }
+    }
+
+    function setupBedBookingForm() {
+        const form = document.getElementById('bedBookingForm');
+        
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const patientName = document.getElementById('patientName').value.trim();
+                const email = document.getElementById('patientEmail').value.trim();
+                const phone = document.getElementById('patientPhone').value.trim();
+                const admissionDate = document.getElementById('admissionDate').value;
+                const roomType = document.getElementById('roomType').value;
+                const emergencyContact = document.getElementById('emergencyContact').value.trim();
+                const hospitalName = document.getElementById('hospitalName').value;
+                
+                // Validation
+                if (!patientName || !email || !phone || !admissionDate || !roomType || !emergencyContact || !hospitalName) {
+                    showToast('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showToast('Please enter a valid email address', 'error');
+                    return;
+                }
+                
+                // Phone validation
+                if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+                    showToast('Please enter a valid 10-digit phone number', 'error');
+                    return;
+                }
+                
+                // Emergency contact validation
+                if (emergencyContact.length !== 10 || !/^\d+$/.test(emergencyContact)) {
+                    showToast('Please enter a valid emergency contact number', 'error');
+                    return;
+                }
+                
+                // Date validation
+                const selectedDate = new Date(admissionDate);
+                const now = new Date();
+                if (selectedDate < now) {
+                    showToast('Please select a future date', 'error');
+                    return;
+                }
+                
+                const bookingData = {
+                    patientName,
+                    email,
+                    phone,
+                    admissionDate,
+                    roomType,
+                    emergencyContact,
+                    hospitalName
+                };
+                
+                try {
+                    showToast('Processing your booking...', 'info');
+                    
+                    const response = await fetch('http://localhost:5000/api/hospital-beds', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(bookingData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        showToast(result.message || 'Hospital bed booked successfully!', 'success');
+                        
+                        // Reset only non-user data
+                        document.getElementById('admissionDate').value = '';
+                        document.getElementById('roomType').value = '';
+                        document.getElementById('emergencyContact').value = '';
+                        
+                        // Close modal
+                        const modal = document.getElementById('bedBookingModal');
+                        modal.classList.remove('active');
+                    } else {
+                        showToast(result.message || 'Failed to book hospital bed', 'error');
+                    }
+                } catch (error) {
+                    console.error('Hospital Bed Booking Error:', error);
+                    showToast('An error occurred. Please try again.', 'error');
+                }
+            });
+        }
+    }
+    
+    function updateRoomTypes(hospitalId) {
+        const roomTypeSelect = document.getElementById('roomType');
+        const hospital = hospitals[hospitalId];
+        
+        if (roomTypeSelect && hospital) {
+            // Clear existing options
+            roomTypeSelect.innerHTML = '';
+            
+            // Add new options
+            hospital.bedTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = `${type} - ₹${hospital.fees[type]}/day`;
+                roomTypeSelect.appendChild(option);
+            });
+        }
     }
 
     function showModal(content) {
@@ -408,6 +330,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    const bookBedBtn = document.getElementById('bookBedBtn');
+    const bookingModal = document.getElementById('bookingModal');
+    const hospitalBedForm = document.getElementById('hospitalBedForm');
+
+    // Hide form by default
+    if (bookingModal) bookingModal.style.display = 'none';
+
+    // Show form when button is clicked
+    if (bookBedBtn && bookingModal) {
+        bookBedBtn.addEventListener('click', function() {
+            bookingModal.style.display = (bookingModal.style.display === 'none' || !bookingModal.style.display) ? 'block' : 'none';
+        });
+    }
+
+    // Form submission
+    if (hospitalBedForm) {
+        hospitalBedForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const hospital = document.getElementById('hospital').value.trim();
+            const bedType = document.getElementById('bedType').value.trim();
+            const admissionDate = document.getElementById('admissionDate').value.trim();
+            const duration = document.getElementById('duration').value.trim();
+            const medicalCondition = document.getElementById('medicalCondition').value.trim();
+            let hasError = false;
+            if (!name) { showToast('Name is required', 'error'); hasError = true; }
+            if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showToast('Valid email required', 'error'); hasError = true; }
+            if (!phone || !phone.match(/^\d{10}$/)) { showToast('Valid 10-digit phone required', 'error'); hasError = true; }
+            if (!hospital) { showToast('Hospital required', 'error'); hasError = true; }
+            if (!bedType) { showToast('Bed type required', 'error'); hasError = true; }
+            if (!admissionDate) { showToast('Admission date required', 'error'); hasError = true; }
+            if (!duration) { showToast('Duration required', 'error'); hasError = true; }
+            if (!medicalCondition) { showToast('Medical condition required', 'error'); hasError = true; }
+            if (hasError) return;
+            const data = { name, email, phone, hospital, bedType, admissionDate, duration, medicalCondition };
+            try {
+                showToast('Booking bed...', 'info');
+                const res = await fetch('/api/hospital-beds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    showToast('Bed booked!', 'success');
+                    hospitalBedForm.reset();
+                    bookingModal.style.display = 'none';
+                } else {
+                    showToast(result.message || 'Booking failed', 'error');
+                }
+            } catch (err) {
+                showToast('Server error. Try again.', 'error');
+            }
+        });
+    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 });
 
 // Check if user is logged in
@@ -424,11 +405,7 @@ function checkLoginStatus() {
         const userNameElement = document.getElementById('displayUsername');
         
         if (userData && userNameElement) {
-            if (userData.fullName) {
-                userNameElement.textContent = userData.fullName;
-            } else if (userData.email) {
-                userNameElement.textContent = userData.email.split('@')[0];
-            }
+            userNameElement.textContent = userData.username || userData.email.split('@')[0];
         }
     } else {
         // User is not logged in
@@ -451,8 +428,13 @@ function setupLogout() {
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('medicare-user');
             
-            // Redirect to login page
-            window.location.href = 'login.html';
+            // Show success message
+            showToast('Logged out successfully!', 'success');
+            
+            // Redirect to login page after a short delay
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
         });
     }
 }
@@ -482,18 +464,32 @@ function showToast(message, type = 'success') {
     
     if (!toastContainer) return;
     
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    // Remove existing toasts
+    const existingToasts = toastContainer.getElementsByClassName('toast');
+    Array.from(existingToasts).forEach(toast => toast.remove());
     
-    const icon = type === 'success' ? 'check-circle' : 
-                type === 'error' ? 'alert-circle' : 
-                type === 'info' ? 'info' : 'bell';
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Add icon based on type
+    let icon = '';
+    switch(type) {
+        case 'success':
+            icon = '<i data-lucide="check-circle"></i>';
+            break;
+        case 'error':
+            icon = '<i data-lucide="x-circle"></i>';
+            break;
+        case 'info':
+            icon = '<i data-lucide="info"></i>';
+            break;
+    }
     
     toast.innerHTML = `
-        <div class="toast-icon">
-            <i data-lucide="${icon}"></i>
+        <div class="toast-content">
+            ${icon}
+            <span>${message}</span>
         </div>
-        <div class="toast-content">${message}</div>
     `;
     
     toastContainer.appendChild(toast);
@@ -501,9 +497,7 @@ function showToast(message, type = 'success') {
     
     // Auto remove after 3 seconds
     setTimeout(() => {
-        toast.classList.add('toast-hide');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
     }, 3000);
 }

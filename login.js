@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 showToast('Logging in...', 'info');
                 
-                const response = await fetch("http://localhost:5000/login", {
+                const response = await fetch("http://localhost:5000/api/login", {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const result = await response.json();
 
-                if (response.ok && result.user) {
+                if (response.ok) {
                     // Store user data
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('medicare-user', JSON.stringify(result.user));
@@ -88,7 +88,7 @@ function checkLoginStatus() {
         const userNameElement = userProfile.querySelector('.user-name');
         
         if (userData && userNameElement) {
-            userNameElement.textContent = userData.fullName || userData.email.split('@')[0];
+            userNameElement.textContent = userData.username || userData.email.split('@')[0];
         }
         
         // If on login/signup page, redirect to home
